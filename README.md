@@ -1,2 +1,2 @@
 # DotNetBenchmarking
-.net code benchmarks and results
+.net code benchmarking
