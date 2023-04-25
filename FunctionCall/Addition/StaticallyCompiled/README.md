@@ -61,7 +61,6 @@ BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)
 - No difference between no function, static method, instance method, static local function or instance local function with or without capture
 - No difference on these cases between core and framework
 - Lambdas are slower (*7 on core, *6 on framework) since they have to be converted to an expression tree before being compiled to IL
-- Instance delegates (including lambdas) are faster than static delegates because of [this](https://stackoverflow.com/a/42187448/446279)
+- Instance delegates (including lambdas) are faster than static delegates ([as expected](https://stackoverflow.com/a/42187448/446279))
+- Instance delegates (including lambdas) are slower on core, static delegates are slower on framework
 - Instance delegates (including lambdas) allocate
-- Instance delegates are slower on core, static delegates are slower on framework
-- Delegates are faster when they have a target (non-static) as expected
