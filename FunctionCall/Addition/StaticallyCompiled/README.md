@@ -1,9 +1,7 @@
 # Statically compiled Add function execution
 
 ## Description
-This benchmark compares different methods of executing statically compiled code calculating the sum of two integers by:
-### NoFunction
-Addition implemented without using a function
+This benchmark compares different methods of executing statically compiled code calculating the sum of two integers, equivalent to:
 ```csharp
 int loops = Loops;
 for (int a = 0; a < loops; a++)
@@ -12,24 +10,18 @@ for (int a = 0; a < loops; a++)
     int c = a + b;
 }
 ```
-### StaticMethod
-Addition implemented as a static method
-### InstanceMethod
-Addition implemented as an instance method
-### StaticLocalFunction
-Addition implemented as a local static method
-### InstanceLocalFunction
-Addition implemented as a local non-static method
-### InstanceLocalFunctionCapture
-Addition implemented as a local method capturing a local variable
-### Lambda
-Addition implemented as a local lambda expression
-### LambdaCapture
-Addition implemented as a local lambda expression capturing a local variable
-### DelegateStaticMethod
-Addition implemented as a delegate to a static method (no target)
-### DelegateInstanceMethod
-Addition implemented as a delegate to a static method (with a target)
+|                       Method |                                                                    Description |
+|----------------------------- |------------------------------------------------------------------------------- |
+|                   NoFunction |             Addition implemented without using a function (same code as above) |
+|                 StaticMethod |                                        Addition implemented as a static method |
+|               InstanceMethod |                                     Addition implemented as an instance method |
+|          StaticLocalFunction |                                  Addition implemented as a local static method |
+|        InstanceLocalFunction |                              Addition implemented as a local non-static method |
+| InstanceLocalFunctionCapture |              Addition implemented as a local method capturing a local variable |
+|                       Lambda |                              Addition implemented as a local lambda expression |
+|                LambdaCapture |   Addition implemented as a local lambda expression capturing a local variable |
+|         DelegateStaticMethod |              Addition implemented as a delegate to a static method (no target) |
+|       DelegateInstanceMethod |          Addition implemented as a delegate to a static method (with a target) |
 
 ## Environment
 <p>
