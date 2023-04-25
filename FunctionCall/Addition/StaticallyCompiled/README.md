@@ -2,25 +2,44 @@
 
 ## Description
 This benchmark compares different methods of executing code that calculates the sum of two integers by:
-- Not using a function
-- Executing a static method
-- Executing an instance method
-- Executing a static local function
-- Executing an instance local function
-- Executing an instance local function capturing a variable
-- Executing a delegate built from a lambda expression
-- Executing a delegate taking a target a parameter (instance)
-- Executing a delegate not taking a target a parameter (static)
+### NoFunction
+Not using a function
+```csharp
+int loops = Loops;
+for (int a = 0; a < loops; a++)
+{
+    const int b = 2;
+    int c = a + b;
+}
+```
+### StaticMethod
+Addition implemented as a static method
+### InstanceMethod
+Addition implemented as an instance method
+### StaticLocalFunction
+Addition implemented as a local static method
+### InstanceLocalFunction
+Addition implemented as a local non-static method
+### InstanceLocalFunctionCapture
+Addition implemented as a local method capturing a local variable
+### Lambda
+Addition implemented as a local lambda expression
+### LambdaCapture
+Addition implemented as a local lambda expression capturing a local variable
+### DelegateStaticMethod
+Addition implemented as a delegate to a static method (no target)
+### DelegateInstanceMethod
+Addition implemented as a delegate to a static method (with a target)
 
-## Results
-BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)
+## Environment
+<p>BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)
 12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores
 .NET SDK=7.0.203
   [Host]               : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
   .NET 7.0             : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
-  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256
+  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256</p>
 
-
+## Results
 |                       Method |              Runtime | Loops |      Mean |    StdDev | Ratio | Allocated | Alloc Ratio |
 |----------------------------- |--------------------- |------ |----------:|----------:|------:|----------:|------------:|
 |                   NoFunction |             .NET 7.0 | 10000 |  2.194 us | 0.0029 us |  1.00 |         - |          NA |
