@@ -19,25 +19,24 @@ public class Execution
     [Benchmark(Baseline = true)]
     public void NoFunction()
     {
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = _one + _one;
+            int sum = a + i;
         }
     }
-
-    // Using a non const field to avoid aggressive inlining
-    private int _one = 1;
 
     [Benchmark]
     public void StaticMethod()
     {
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            AddStatic(1, 1);
+            AddStatic(a, i);
         }
     }
 
@@ -46,11 +45,12 @@ public class Execution
     [Benchmark]
     public void InstanceMethod()
     {
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            AddInstance(1, 1);
+            AddInstance(a, i);
         }
     }
 
@@ -59,11 +59,12 @@ public class Execution
     [Benchmark]
     public void VirtualMethod()
     {
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            AddInstanceVirtual(1, 1);
+            AddInstanceVirtual(a, i);
         }
     }
 
@@ -74,11 +75,12 @@ public class Execution
     {
         static int LocalAddStatic(int a, int b) => a + b;
 
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = LocalAddStatic(1, 1);
+            int sum = LocalAddStatic(a, i);
         }
     }
 
@@ -87,24 +89,26 @@ public class Execution
     {
         int LocalAddInstance(int a, int b) => a + b;
 
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = LocalAddInstance(1, 1);
+            int sum = LocalAddInstance(a, i);
         }
     }
 
     [Benchmark]
     public void InstanceLocalFunctionCapture()
     {
-        int LocalAdd(int a) => a + _one;
+        int a = 1;
+        int LocalAdd(int b) => a + b;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = LocalAdd(1);
+            int sum = LocalAdd(i);
         }
     }
 
@@ -113,24 +117,26 @@ public class Execution
     {
         Func<int, int, int> LambdaAdd = (a, b) => a + b;
 
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = LambdaAdd(1, 1);
+            int sum = LambdaAdd(a, i);
         }
     }
 
     [Benchmark]
     public void LambdaCapture()
     {
-        Func<int, int> LambdaAdd = a => a + _one;
+        int a = 1;
+        Func<int, int> LambdaAdd = b => a + b;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = LambdaAdd(1);
+            int sum = LambdaAdd(i);
         }
     }
 
@@ -139,11 +145,12 @@ public class Execution
     {
         TakesTwoIntsReturnsInt StaticDelegateAdd = AddStatic;
 
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = StaticDelegateAdd(1, 1);
+            int sum = StaticDelegateAdd(a, i);
         }
     }
 
@@ -156,16 +163,17 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = InstanceDelegateAdd(1);
+            int sum = InstanceDelegateAdd(i);
         }
     }
 
-    private int AddInstance(int a) => a + _one;
+    private int _a = 1;
+    private int AddInstance(int b) => _a + b;
 
     /// <summary>
     /// Prototype for functions taking one integer in parameter and returning an integer.
     /// </summary>
-    public delegate int TakesOneIntReturnsInt(int a);
+    public delegate int TakesOneIntReturnsInt(int b);
 
     [Benchmark]
     public void DelegateVirtualMethod()
@@ -176,9 +184,9 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = InstanceDelegateAdd(1);
+            int sum = InstanceDelegateAdd(i);
         }
     }
 
-    protected virtual int AddInstanceVirtual(int a) => a + _one;
+    protected virtual int AddInstanceVirtual(int b) => _a + b;
 }

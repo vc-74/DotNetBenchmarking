@@ -93,11 +93,11 @@ public class Execution
     public void ExpressionTreeFromLambda() => Execute(_addExpressionTreeFromLambda);
 
     [Benchmark]
-    public void LoopDynamicMethodStatic() => _loopDynamicMethodStatic(a: 1, b: 1, Loops);
+    public void LoopDynamicMethodStatic() => _loopDynamicMethodStatic(Loops);
 
     [Benchmark]
-    public void LoopDynamicMethodInstance() => _loopDynamicMethodInstance(a: 1, b: 1, Loops);
+    public void LoopDynamicMethodInstance() => _loopDynamicMethodInstance(Loops);
 
     [Benchmark]
-    public void LoopDynamicMethodEmbedded() => _loopDynamicMethodEmbedded(a: 1, b: 1, Loops);
+    public void LoopDynamicMethodEmbedded() => _loopDynamicMethodEmbedded(Loops);
 }

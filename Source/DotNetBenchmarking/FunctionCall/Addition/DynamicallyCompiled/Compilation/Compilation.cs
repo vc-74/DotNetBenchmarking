@@ -42,4 +42,13 @@ public class Compilation
 
     [Benchmark]
     public void ExpressionTreeFromLambda() => AddMethodFactory.GetFromExpressionTree(useLambda: true);
+
+    [Benchmark]
+    public void LoopDynamicMethodStatic() => AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.StaticDelegate);
+
+    [Benchmark]
+    public void LoopDynamicMethodInstance() => AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.InstanceDelegate);
+
+    [Benchmark]
+    public void LoopDynamicMethodEmbedded() => AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.Embedded);
 }

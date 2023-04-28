@@ -6,19 +6,15 @@ namespace DotNetBenchmarking.FunctionCall;
 /// <summary>
 /// Prototype for functions doing a certain number of integer additions (loops).
 /// </summary>
-/// <param name="a">Addition left operand.</param>
-/// <param name="b">Addition right operand.</param>
 /// <param name="loops">Number of additions to execute.</param>
-public delegate void AddLoop(int a, int b, int loops);
+public delegate void AddLoop(int loops);
 
 /// <summary>
 /// Prototype for functions doing a certain number of integer additions (loops).
 /// </summary>
-/// <param name="a">Addition left operand.</param>
-/// <param name="b">Addition right operand.</param>
 /// <param name="loops">Number of additions to execute.</param>
 /// <returns>The addition results.</returns>
-internal delegate int[] AddLoopWithResults(int a, int b, int loops);
+internal delegate int[] AddLoopWithResults(int loops);
 
 /// <summary>
 /// Builds <see cref="AddLoop"/> delegate instances.
@@ -43,8 +39,6 @@ internal static class AddLoopMethodFactory
     private static readonly MethodInfo _TakesTwoIntsReturnsIntInvokeMethod = typeof(TakesTwoIntsReturnsInt).GetMethod("Invoke")!;
     private static readonly MethodInfo _AddMethodFactoryGetFromDynamicMethodMethod = typeof(AddMethodFactory).GetMethod("GetFromDynamicMethod")!;
 
-    private static readonly MethodInfo _ConsoleWriteLineIntMethod = typeof(Console).GetMethod("WriteLine", new Type[] { typeof(int) })!;
-
     private static readonly object _delegateTarget = new();
 
     /// <summary>
@@ -52,25 +46,20 @@ internal static class AddLoopMethodFactory
     /// implemented either as a delegate call or embedded.
     /// </summary>
     /// <param name="addImplementation">Add method implementation.</param>
-    /// <param name="outputResultToConsole">Indicates whether the result of the addition should be written to the console (for testing purposes).</param>
     /// <returns>An instance delegate to the built method.</returns>
-    public static AddLoop GetFromDynamicMethod(AddImplementation addImplementation, bool outputResultToConsole = false)
+    public static AddLoop GetFromDynamicMethod(AddImplementation addImplementation)
     {
         DynamicMethod loopDynamicMethod = new("AddIntegers",
-            returnType: null, parameterTypes: new Type[] { typeof(object), typeof(int), typeof(int), typeof(int) });
+            returnType: null, parameterTypes: new Type[] { typeof(object), typeof(int) });
 
         ILGenerator ILGenerator = loopDynamicMethod.GetILGenerator();
 
         LocalBuilder aLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_1);
+        ILGenerator.Emit(OpCodes.Ldc_I4, 1);
         ILGenerator.Emit(OpCodes.Stloc, aLocal);
 
-        LocalBuilder bLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_2);
-        ILGenerator.Emit(OpCodes.Stloc, bLocal);
-
         LocalBuilder loopsLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_3);
+        ILGenerator.Emit(OpCodes.Ldarg_1);
         ILGenerator.Emit(OpCodes.Stloc, loopsLocal);
 
         LocalBuilder? addLocal;
@@ -102,7 +91,7 @@ internal static class AddLoopMethodFactory
         {
             // Add
             ILGenerator.Emit(OpCodes.Ldloc, aLocal);
-            ILGenerator.Emit(OpCodes.Ldloc, bLocal);
+            ILGenerator.Emit(OpCodes.Ldloc, indexLocal);
             ILGenerator.Emit(OpCodes.Add);
         }
         else
@@ -110,18 +99,11 @@ internal static class AddLoopMethodFactory
             // Invoke the add delegate
             ILGenerator.Emit(OpCodes.Ldloc, addLocal);
             ILGenerator.Emit(OpCodes.Ldloc, aLocal);
-            ILGenerator.Emit(OpCodes.Ldloc, bLocal);
+            ILGenerator.Emit(OpCodes.Ldloc, indexLocal);
             ILGenerator.Emit(OpCodes.Callvirt, _TakesTwoIntsReturnsIntInvokeMethod);
         }
 
-        if (outputResultToConsole)
-        {
-            ILGenerator.Emit(OpCodes.Call, _ConsoleWriteLineIntMethod);
-        }
-        else
-        {
-            ILGenerator.Emit(OpCodes.Pop);
-        }
+        ILGenerator.Emit(OpCodes.Pop);
 
         ILGenerator.Emit(OpCodes.Ldloc, indexLocal);
         ILGenerator.Emit(OpCodes.Ldc_I4, 1);
@@ -148,20 +130,16 @@ internal static class AddLoopMethodFactory
     public static AddLoopWithResults GetWithResultsFromDynamicMethod(AddImplementation addImplementation)
     {
         DynamicMethod loopDynamicMethod = new("AddIntegers",
-            returnType: typeof(int[]), parameterTypes: new Type[] { typeof(object), typeof(int), typeof(int), typeof(int) });
+            returnType: typeof(int[]), parameterTypes: new Type[] { typeof(object), typeof(int) });
 
         ILGenerator ILGenerator = loopDynamicMethod.GetILGenerator();
 
         LocalBuilder aLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_1);
+        ILGenerator.Emit(OpCodes.Ldc_I4, 1);
         ILGenerator.Emit(OpCodes.Stloc, aLocal);
 
-        LocalBuilder bLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_2);
-        ILGenerator.Emit(OpCodes.Stloc, bLocal);
-
         LocalBuilder loopsLocal = ILGenerator.DeclareLocal(typeof(int));
-        ILGenerator.Emit(OpCodes.Ldarg_3);
+        ILGenerator.Emit(OpCodes.Ldarg_1);
         ILGenerator.Emit(OpCodes.Stloc, loopsLocal);
 
         LocalBuilder resultLocal = ILGenerator.DeclareLocal(typeof(int[]));
@@ -198,7 +176,7 @@ internal static class AddLoopMethodFactory
         {
             // Add
             ILGenerator.Emit(OpCodes.Ldloc, aLocal);
-            ILGenerator.Emit(OpCodes.Ldloc, bLocal);
+            ILGenerator.Emit(OpCodes.Ldloc, indexLocal);
             ILGenerator.Emit(OpCodes.Add);
         }
         else
@@ -206,7 +184,7 @@ internal static class AddLoopMethodFactory
             // Invoke the add delegate
             ILGenerator.Emit(OpCodes.Ldloc, addLocal);
             ILGenerator.Emit(OpCodes.Ldloc, aLocal);
-            ILGenerator.Emit(OpCodes.Ldloc, bLocal);
+            ILGenerator.Emit(OpCodes.Ldloc, indexLocal);
             ILGenerator.Emit(OpCodes.Callvirt, _TakesTwoIntsReturnsIntInvokeMethod);
         }
 

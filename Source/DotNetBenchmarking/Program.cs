@@ -8,6 +8,6 @@ internal class Program
     {
         /*AddLoop addLoop = AddLoopMethodFactory.Build(AddLoopMethodFactory.AddImplementation.Embedded, outputResultToConsole: true);
         addLoop(1, 1, 10);*/
-        BenchmarkRunner.Run(typeof(FunctionCall.Addition.DynamicallyCompiled.Execution));
+        BenchmarkRunner.Run(typeof(FunctionCall.Addition.DynamicallyCompiled.CompilationAndExecution));
     }
 }

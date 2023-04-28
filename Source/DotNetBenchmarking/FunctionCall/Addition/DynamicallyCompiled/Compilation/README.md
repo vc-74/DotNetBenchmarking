@@ -29,38 +29,27 @@ BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)
 </p>
 
 ## Results
-|                        Method |              Runtime |         Mean |      StdDev | Ratio |   Gen0 |   Gen1 |   Gen2 | Allocated | Alloc Ratio |
-|------------------------------ |--------------------- |-------------:|------------:|------:|-------:|-------:|-------:|----------:|------------:|
-|          DynamicTypeNewModule |             .NET 7.0 |   196.888 us |  39.8090 us |     ? | 0.3662 | 0.1221 |      - |   5.49 KB |           ? |
-|     DynamicTypeExistingModule |             .NET 7.0 | 1,091.877 us | 207.3289 us |     ? |      - |      - |      - |   4.61 KB |           ? |
-|   DynamicMethodStaticDelegate |             .NET 7.0 |     2.212 us |   0.1467 us |  1.00 | 0.0992 | 0.0954 | 0.0038 |   1.17 KB |        1.00 |
-| DynamicMethodInstanceDelegate |             .NET 7.0 |     2.242 us |   0.1440 us |  1.02 | 0.1068 | 0.1030 | 0.0153 |   1.19 KB |        1.01 |
-|           ExpressionTreeBuilt |             .NET 7.0 |    19.611 us |   0.4810 us |  8.76 | 0.3662 | 0.3357 |      - |   4.67 KB |        3.99 |
-|      ExpressionTreeFromLambda |             .NET 7.0 |    15.228 us |   0.3990 us |  6.81 | 0.3662 | 0.3357 |      - |   4.73 KB |        4.04 |
-|                               |                      |              |             |       |        |        |        |           |             |
-|          DynamicTypeNewModule | .NET Framework 4.7.2 |   225.657 us |  38.1239 us |     ? | 0.9766 | 0.2441 |      - |   6.54 KB |           ? |
-|     DynamicTypeExistingModule | .NET Framework 4.7.2 | 1,003.947 us | 229.4997 us |     ? | 0.4883 |      - |      - |   5.07 KB |           ? |
-|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |     3.357 us |   0.1628 us |  1.00 | 0.1984 | 0.0992 | 0.0229 |   1.24 KB |        1.00 |
-| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |     2.773 us |   0.1044 us |  0.83 | 0.2060 | 0.1030 | 0.0229 |   1.27 KB |        1.03 |
-|           ExpressionTreeBuilt | .NET Framework 4.7.2 |    16.199 us |   0.2466 us |  4.81 | 0.8240 | 0.3967 | 0.0305 |   5.19 KB |        4.19 |
-|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |    15.035 us |   0.2790 us |  4.49 | 0.7935 | 0.3967 | 0.0305 |   4.92 KB |        3.98 |
-
-
-|                        Method |              Runtime |         Mean |      StdDev |       Median | Ratio |   Gen0 |   Gen1 |   Gen2 | Allocated | Alloc Ratio |
-|------------------------------ |--------------------- |-------------:|------------:|-------------:|------:|-------:|-------:|-------:|----------:|------------:|
-|          DynamicTypeNewModule |             .NET 7.0 |   202.446 us |  40.2311 us |   202.933 us |     ? | 0.3662 | 0.1221 |      - |   5.49 KB |           ? |
-|     DynamicTypeExistingModule |             .NET 7.0 | 1,073.113 us | 247.0656 us | 1,052.613 us |     ? |      - |      - |      - |   4.61 KB |           ? |
-|   DynamicMethodStaticDelegate |             .NET 7.0 |     1.959 us |   0.0807 us |     1.947 us |  1.00 | 0.0992 | 0.0954 | 0.0038 |   1.17 KB |        1.00 |
-| DynamicMethodInstanceDelegate |             .NET 7.0 |     2.170 us |   0.1063 us |     2.173 us |  1.11 | 0.0973 | 0.0954 | 0.0019 |   1.19 KB |        1.01 |
-|           ExpressionTreeBuilt |             .NET 7.0 |    16.615 us |   0.2817 us |    16.642 us |  8.47 | 0.3662 | 0.3357 |      - |   4.67 KB |        3.99 |
-|      ExpressionTreeFromLambda |             .NET 7.0 |    16.193 us |   0.3446 us |    16.186 us |  8.24 | 0.3662 | 0.3357 |      - |   4.73 KB |        4.04 |
-|                               |                      |              |             |              |       |        |        |        |           |             |
-|          DynamicTypeNewModule | .NET Framework 4.7.2 |   225.096 us |  38.1231 us |   224.368 us |     ? | 0.9766 | 0.2441 |      - |   6.54 KB |           ? |
-|     DynamicTypeExistingModule | .NET Framework 4.7.2 | 1,004.969 us | 246.2931 us |   989.722 us |     ? | 0.4883 |      - |      - |   5.07 KB |           ? |
-|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |     3.011 us |   0.0553 us |     3.012 us |  1.00 | 0.1984 | 0.0992 | 0.0229 |   1.24 KB |        1.00 |
-| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |     4.687 us |   1.2404 us |     5.628 us |  1.06 | 0.2022 | 0.0992 | 0.0229 |   1.25 KB |        1.01 |
-|           ExpressionTreeBuilt | .NET Framework 4.7.2 |    22.503 us |  12.0601 us |    15.169 us | 10.53 | 0.8392 | 0.4120 | 0.0305 |   5.19 KB |        4.19 |
-|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |    13.864 us |   0.0529 us |    13.855 us |  4.60 | 0.7935 | 0.3967 | 0.0305 |   4.92 KB |        3.98 |
+|                        Method |              Runtime |       Mean |      StdDev | Ratio |   Gen0 |   Gen1 |   Gen2 | Allocated | Alloc Ratio |
+|------------------------------ |--------------------- |-----------:|------------:|------:|-------:|-------:|-------:|----------:|------------:|
+|          DynamicTypeNewModule |             .NET 7.0 | 167.712 us |  35.1706 us |     ? | 0.3662 | 0.1221 |      - |   5.49 KB |           ? |
+|     DynamicTypeExistingModule |             .NET 7.0 | 959.181 us | 204.1626 us |     ? |      - |      - |      - |   4.61 KB |           ? |
+|   DynamicMethodStaticDelegate |             .NET 7.0 |   1.962 us |   0.1074 us |  1.00 | 0.0992 | 0.0973 | 0.0095 |   1.17 KB |        1.00 |
+| DynamicMethodInstanceDelegate |             .NET 7.0 |   1.902 us |   0.0968 us |  0.97 | 0.0973 | 0.0954 | 0.0038 |   1.19 KB |        1.01 |
+|           ExpressionTreeBuilt |             .NET 7.0 |  14.676 us |   0.2050 us |  7.54 | 0.3662 | 0.3510 |      - |   4.67 KB |        3.99 |
+|      ExpressionTreeFromLambda |             .NET 7.0 |  13.132 us |   0.1683 us |  6.75 | 0.3815 | 0.3510 |      - |   4.73 KB |        4.04 |
+|       LoopDynamicMethodStatic |             .NET 7.0 |   2.305 us |   0.0975 us |  1.18 | 0.1335 | 0.1297 |      - |   1.66 KB |        1.41 |
+|     LoopDynamicMethodInstance |             .NET 7.0 |   2.402 us |   0.1589 us |  1.23 | 0.1335 | 0.1297 | 0.0153 |   1.66 KB |        1.41 |
+|     LoopDynamicMethodEmbedded |             .NET 7.0 |   2.351 us |   0.1874 us |  1.20 | 0.1259 | 0.1221 | 0.0076 |   1.55 KB |        1.32 |
+|                               |                      |            |             |       |        |        |        |           |             |
+|          DynamicTypeNewModule | .NET Framework 4.7.2 | 184.761 us |  31.7654 us |     ? | 0.9766 | 0.2441 |      - |   6.54 KB |           ? |
+|     DynamicTypeExistingModule | .NET Framework 4.7.2 | 883.395 us | 198.1094 us |     ? | 0.4883 |      - |      - |   5.06 KB |           ? |
+|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |   2.771 us |   0.1310 us |  1.00 | 0.1984 | 0.0992 | 0.0229 |   1.24 KB |        1.00 |
+| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |   2.934 us |   0.1578 us |  1.07 | 0.2022 | 0.0992 | 0.0229 |   1.25 KB |        1.01 |
+|           ExpressionTreeBuilt | .NET Framework 4.7.2 |  12.586 us |   0.1645 us |  4.64 | 0.8392 | 0.4120 | 0.0305 |   5.19 KB |        4.19 |
+|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |  11.762 us |   0.1745 us |  4.34 | 0.7935 | 0.3967 | 0.0305 |   4.92 KB |        3.98 |
+|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |   3.572 us |   0.1326 us |  1.29 | 0.2937 | 0.1450 | 0.0267 |   1.82 KB |        1.47 |
+|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |   3.637 us |   0.1544 us |  1.32 | 0.2937 | 0.1450 | 0.0267 |   1.82 KB |        1.47 |
+|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |   3.272 us |   0.1463 us |  1.19 | 0.2708 | 0.1335 | 0.0305 |   1.69 KB |        1.36 |
 
 ## Conclusions:
 - DynamicMethod compilation is much faster (up to ~1000*) than creating a new type and adding a method to it

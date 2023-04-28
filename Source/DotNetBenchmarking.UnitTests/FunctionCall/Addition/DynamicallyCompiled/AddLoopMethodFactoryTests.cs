@@ -27,15 +27,15 @@ public class AddLoopMethodFactoryTests
         Assert.NotNull(builtMethod);
         Assert.Equal("AddIntegers", builtMethod.Name);
         Assert.Equal(typeof(int[]), builtMethod.ReturnType);
-        Assert.Equal(new Type[] { typeof(object), typeof(int), typeof(int), typeof(int) }, builtMethod.GetParameters().Select(p => p.ParameterType).ToArray());
+        Assert.Equal(new Type[] { typeof(object), typeof(int) }, builtMethod.GetParameters().Select(p => p.ParameterType).ToArray());
 
         Assert.True(builtMethod.IsPublic);
         Assert.True(builtMethod.IsStatic);
 
         Assert.IsType<object>(add.Target);
 
-        int[] sums = add(a: 1, b: 2, loops: 100);
-        Assert.Equal(Enumerable.Repeat(3, 100).ToArray(), sums);
+        int[] sums = add(loops: 100);
+        Assert.Equal(Enumerable.Range(0, 100).Select(i => 1 + i).ToArray(), sums);
     }
 
     /// <summary>
