@@ -6,6 +6,6 @@ internal class Program
 {
     static void Main(string[] _)
     {
-        BenchmarkRunner.Run(typeof(FunctionCall.DynamicallyCompiled.Execution));
+        BenchmarkRunner.Run(typeof(FunctionCall.DynamicallyCompiled.CompilationAndExecution));
     }
 }

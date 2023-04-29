@@ -77,7 +77,7 @@ The different cases cover:
 	- Expresion tree: explicit creation and compiler generated from a lambda function
 	- DynamicMethod implementating the loop: calling a static delegate, and instance delegate or embedding the addition
 
-# Delegates performance
+## Delegates performance
 Static delegates execution require some arguments reshuffling ([details](https://stackoverflow.com/a/42187448/446279)) and are slower, however, their instances can be cached during the first invocation and reused during the next invocation.
 Instance delegates do not require arguments reshuffling and are faster than static delegates, however, instances cannot be cached and have to be recreated.
 Lambdas are the best of both worlds, the compiler generates a class with a delegate field, instantiates an instance during the first invocation and caches it. 
@@ -89,7 +89,7 @@ This instance is used as the delegate's target. Lambdas are therefore fast and d
 | Static        | Only during the first invocation | Null                                         |
 | Lambda        | Only during the first invocation | Not null (compiler generated class instance) |
 
-## Details
+### Details
 In the following example:
 
 ```csharp

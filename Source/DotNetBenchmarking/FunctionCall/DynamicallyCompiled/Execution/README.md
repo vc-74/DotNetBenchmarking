@@ -113,6 +113,6 @@ BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)
 |     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 | 100000 |  25,807.7 ns |     60.34 ns |  25,786.7 ns |  1.00 |      - |      - |      - |         - |          NA |
 
 ## Conclusions
-- StaticFunction (inlined) and LoopDynamicMethodEmbedded shows similar performance, sometimes even better when loops is small
+- StaticFunction (inlined) and LoopDynamicMethodEmbedded shows similar performance
 - DynamicMethodStaticDelegate, DynamicTypeStaticDelegate and ExpressionTreeFromLambda show similar performance since they are based on static delegates
 - Framework is faster than core to invoke delegates from dynamically built functions

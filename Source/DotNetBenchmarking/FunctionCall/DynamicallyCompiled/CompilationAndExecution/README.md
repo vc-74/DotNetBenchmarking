@@ -1,79 +1,92 @@
-|                        Method |              Runtime | IterationCount | WarmupCount |  Loops |         Mean |       StdDev |       Median |  Ratio |   Gen0 |   Gen1 |   Gen2 | Allocated | Alloc Ratio |
-|------------------------------ |--------------------- |--------------- |------------ |------- |-------------:|-------------:|-------------:|-------:|-------:|-------:|-------:|----------:|------------:|
-|     DynamicTypeStaticDelegate |             .NET 7.0 |              3 |           1 |   1000 | 208,031.2 ns | 38,227.20 ns | 206,895.4 ns |      ? | 0.3662 | 0.1221 |      - |    5296 B |           ? |
-|   DynamicTypeInstanceDelegate |             .NET 7.0 |              3 |           1 |   1000 | 155,831.9 ns | 36,167.32 ns | 144,884.5 ns |      ? | 0.2441 |      - |      - |    5640 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 |              3 |           1 |   1000 | 227,742.4 ns | 24,632.39 ns | 215,781.0 ns |      ? | 0.9766 | 0.2441 |      - |    6460 B |           ? |
-|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 |              3 |           1 |   1000 | 237,729.4 ns | 34,879.76 ns | 250,281.3 ns |      ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction |             .NET 7.0 |        Default |     Default |   1000 |     248.9 ns |      9.60 ns |     246.2 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction |             .NET 7.0 |        Default |     Default |   1000 |     241.2 ns |      5.17 ns |     240.7 ns |   0.98 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate |             .NET 7.0 |        Default |     Default |   1000 |  19,848.9 ns |    275.92 ns |  19,866.6 ns |  81.91 | 0.0916 | 0.0763 |      - |    1199 B |          NA |
-| DynamicMethodInstanceDelegate |             .NET 7.0 |        Default |     Default |   1000 |  16,011.1 ns |    793.23 ns |  15,924.3 ns |  63.57 | 0.0916 | 0.0763 |      - |    1215 B |          NA |
-|           ExpressionTreeBuilt |             .NET 7.0 |        Default |     Default |   1000 |  18,194.4 ns |    293.22 ns |  18,188.9 ns |  74.26 | 0.3662 | 0.3357 |      - |    4783 B |          NA |
-|      ExpressionTreeFromLambda |             .NET 7.0 |        Default |     Default |   1000 |  17,334.6 ns |    490.67 ns |  17,334.3 ns |  70.23 | 0.3662 | 0.3357 |      - |    4847 B |          NA |
-|       LoopDynamicMethodStatic |             .NET 7.0 |        Default |     Default |   1000 |  46,970.4 ns |    905.14 ns |  46,846.9 ns | 191.03 | 0.1831 | 0.1221 |      - |    2831 B |          NA |
-|     LoopDynamicMethodInstance |             .NET 7.0 |        Default |     Default |   1000 |  47,635.6 ns |  1,787.25 ns |  47,313.2 ns | 191.37 | 0.1831 | 0.1221 |      - |    2831 B |          NA |
-|     LoopDynamicMethodEmbedded |             .NET 7.0 |        Default |     Default |   1000 |  18,885.0 ns |    264.36 ns |  18,887.2 ns |  77.28 | 0.0916 | 0.0610 |      - |    1506 B |          NA |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction | .NET Framework 4.7.2 |        Default |     Default |   1000 |     241.2 ns |      3.26 ns |     241.7 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction | .NET Framework 4.7.2 |        Default |     Default |   1000 |     247.1 ns |     10.52 ns |     243.2 ns |   1.02 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |        Default |     Default |   1000 |  11,601.8 ns |    288.52 ns |  11,577.1 ns |  48.13 | 0.1984 | 0.0916 | 0.0153 |    1268 B |          NA |
-| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |        Default |     Default |   1000 |  11,167.8 ns |    176.58 ns |  11,153.0 ns |  46.30 | 0.1984 | 0.0916 | 0.0153 |    1284 B |          NA |
-|           ExpressionTreeBuilt | .NET Framework 4.7.2 |        Default |     Default |   1000 |  16,193.2 ns |     62.52 ns |  16,209.1 ns |  67.14 | 0.8240 | 0.3967 | 0.0305 |    5316 B |          NA |
-|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |        Default |     Default |   1000 |  16,139.8 ns |    133.17 ns |  16,092.4 ns |  66.93 | 0.7935 | 0.3967 | 0.0305 |    5041 B |          NA |
-|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |        Default |     Default |   1000 |  71,864.1 ns |    198.29 ns |  71,877.7 ns | 298.19 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
-|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |        Default |     Default |   1000 |  72,127.1 ns |    449.05 ns |  71,932.2 ns | 299.08 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
-|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |        Default |     Default |   1000 |  22,054.7 ns |    227.67 ns |  21,958.8 ns |  91.51 | 0.2441 | 0.1221 |      - |    1645 B |          NA |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|     DynamicTypeStaticDelegate |             .NET 7.0 |              3 |           1 |  10000 | 231,413.7 ns | 40,053.31 ns | 230,618.3 ns |      ? | 0.3662 | 0.1221 |      - |    5296 B |           ? |
-|   DynamicTypeInstanceDelegate |             .NET 7.0 |              3 |           1 |  10000 | 233,507.1 ns | 40,164.99 ns | 232,991.7 ns |      ? | 0.3662 | 0.1221 |      - |    5624 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 |              3 |           1 |  10000 | 252,866.0 ns | 38,527.46 ns | 251,549.3 ns |      ? | 0.9766 | 0.2441 |      - |    6460 B |           ? |
-|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 |              3 |           1 |  10000 | 251,705.2 ns | 38,262.48 ns | 250,807.4 ns |      ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction |             .NET 7.0 |        Default |     Default |  10000 |   2,583.5 ns |      3.33 ns |   2,582.7 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction |             .NET 7.0 |        Default |     Default |  10000 |   2,581.8 ns |      1.28 ns |   2,581.2 ns |   1.00 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate |             .NET 7.0 |        Default |     Default |  10000 |  31,154.0 ns |     67.34 ns |  31,131.0 ns |  12.06 | 0.0610 |      - |      - |    1192 B |          NA |
-| DynamicMethodInstanceDelegate |             .NET 7.0 |        Default |     Default |  10000 |  28,242.5 ns |    172.89 ns |  28,190.5 ns |  10.93 | 0.0916 | 0.0610 |      - |    1215 B |          NA |
-|           ExpressionTreeBuilt |             .NET 7.0 |        Default |     Default |  10000 |  29,613.6 ns |    116.68 ns |  29,588.9 ns |  11.46 | 0.3662 | 0.3357 |      - |    4783 B |          NA |
-|      ExpressionTreeFromLambda |             .NET 7.0 |        Default |     Default |  10000 |  42,920.5 ns |    502.28 ns |  42,891.3 ns |  16.61 | 0.3662 | 0.3052 |      - |    4847 B |          NA |
-|       LoopDynamicMethodStatic |             .NET 7.0 |        Default |     Default |  10000 |  60,522.5 ns |    676.21 ns |  60,238.2 ns |  23.43 | 0.1221 |      - |      - |    2818 B |          NA |
-|     LoopDynamicMethodInstance |             .NET 7.0 |        Default |     Default |  10000 |  60,532.2 ns |  1,043.50 ns |  60,047.3 ns |  23.44 | 0.1221 |      - |      - |    2818 B |          NA |
-|     LoopDynamicMethodEmbedded |             .NET 7.0 |        Default |     Default |  10000 |  22,525.9 ns |    255.21 ns |  22,499.0 ns |   8.72 | 0.0916 | 0.0610 |      - |    1506 B |          NA |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction | .NET Framework 4.7.2 |        Default |     Default |  10000 |   2,591.4 ns |     17.26 ns |   2,583.2 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction | .NET Framework 4.7.2 |        Default |     Default |  10000 |   2,587.9 ns |      9.56 ns |   2,583.8 ns |   1.00 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |        Default |     Default |  10000 |  30,245.2 ns |    244.55 ns |  30,126.3 ns |  11.68 | 0.1831 | 0.0916 |      - |    1266 B |          NA |
-| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |        Default |     Default |  10000 |  22,985.4 ns |    377.27 ns |  22,776.3 ns |   8.87 | 0.1831 | 0.0916 |      - |    1282 B |          NA |
-|           ExpressionTreeBuilt | .NET Framework 4.7.2 |        Default |     Default |  10000 |  25,545.6 ns |     87.28 ns |  25,555.5 ns |   9.85 | 0.8240 | 0.3967 | 0.0305 |    5316 B |          NA |
-|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |        Default |     Default |  10000 |  35,266.8 ns |    653.22 ns |  35,005.1 ns |  13.62 | 0.7935 | 0.3662 |      - |    5041 B |          NA |
-|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |        Default |     Default |  10000 | 120,096.2 ns |  1,326.46 ns | 119,932.5 ns |  46.37 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
-|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |        Default |     Default |  10000 | 120,218.4 ns |  1,518.84 ns | 119,535.4 ns |  46.33 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
-|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |        Default |     Default |  10000 |  24,603.4 ns |    305.69 ns |  24,472.0 ns |   9.48 | 0.2441 | 0.1221 |      - |    1645 B |          NA |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|     DynamicTypeStaticDelegate |             .NET 7.0 |              3 |           1 | 100000 | 315,615.4 ns |  4,633.22 ns | 316,166.5 ns |      ? |      - |      - |      - |    5281 B |           ? |
-|   DynamicTypeInstanceDelegate |             .NET 7.0 |              3 |           1 | 100000 | 258,272.1 ns | 11,200.17 ns | 255,912.1 ns |      ? |      - |      - |      - |    5608 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 |              3 |           1 | 100000 | 326,630.8 ns |  2,736.25 ns | 325,391.6 ns |      ? | 0.9766 |      - |      - |    6428 B |           ? |
-|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 |              3 |           1 | 100000 | 289,435.5 ns | 17,849.53 ns | 289,022.8 ns |      ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction |             .NET 7.0 |        Default |     Default | 100000 |  25,751.8 ns |     21.81 ns |  25,742.3 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction |             .NET 7.0 |        Default |     Default | 100000 |  25,729.5 ns |      5.06 ns |  25,727.0 ns |   1.00 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate |             .NET 7.0 |        Default |     Default | 100000 | 214,632.0 ns |    234.04 ns | 214,591.2 ns |   8.33 |      - |      - |      - |    1176 B |          NA |
-| DynamicMethodInstanceDelegate |             .NET 7.0 |        Default |     Default | 100000 | 189,520.4 ns |    471.13 ns | 189,372.8 ns |   7.36 |      - |      - |      - |    1192 B |          NA |
-|           ExpressionTreeBuilt |             .NET 7.0 |        Default |     Default | 100000 | 115,776.0 ns |    306.51 ns | 115,731.4 ns |   4.50 | 0.3662 | 0.2441 |      - |    4783 B |          NA |
-|      ExpressionTreeFromLambda |             .NET 7.0 |        Default |     Default | 100000 | 218,011.2 ns |    630.09 ns | 217,773.6 ns |   8.47 | 0.2441 |      - |      - |    4831 B |          NA |
-|       LoopDynamicMethodStatic |             .NET 7.0 |        Default |     Default | 100000 | 202,064.8 ns |    275.28 ns | 202,130.4 ns |   7.85 |      - |      - |      - |    2792 B |          NA |
-|     LoopDynamicMethodInstance |             .NET 7.0 |        Default |     Default | 100000 | 201,358.9 ns |    231.83 ns | 201,304.3 ns |   7.82 |      - |      - |      - |    2792 B |          NA |
-|     LoopDynamicMethodEmbedded |             .NET 7.0 |        Default |     Default | 100000 |  43,773.9 ns |     35.34 ns |  43,778.4 ns |   1.70 | 0.0610 |      - |      - |    1500 B |          NA |
-|                               |                      |                |             |        |              |              |              |        |        |        |        |           |             |
-|                    NoFunction | .NET Framework 4.7.2 |        Default |     Default | 100000 |  25,772.7 ns |     20.42 ns |  25,770.4 ns |   1.00 |      - |      - |      - |         - |          NA |
-|                StaticFunction | .NET Framework 4.7.2 |        Default |     Default | 100000 |  25,758.7 ns |      7.14 ns |  25,759.1 ns |   1.00 |      - |      - |      - |         - |          NA |
-|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |        Default |     Default | 100000 | 215,213.2 ns |    221.94 ns | 215,185.6 ns |   8.35 |      - |      - |      - |    1244 B |          NA |
-| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |        Default |     Default | 100000 | 138,237.6 ns |     86.10 ns | 138,213.8 ns |   5.36 |      - |      - |      - |    1260 B |          NA |
-|           ExpressionTreeBuilt | .NET Framework 4.7.2 |        Default |     Default | 100000 | 118,638.8 ns |     92.53 ns | 118,670.7 ns |   4.60 | 0.7324 | 0.3662 |      - |    5314 B |          NA |
-|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |        Default |     Default | 100000 | 220,837.7 ns |    158.90 ns | 220,839.6 ns |   8.57 | 0.7324 | 0.2441 |      - |    5040 B |          NA |
-|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |        Default |     Default | 100000 | 579,628.2 ns |  1,607.84 ns | 579,663.7 ns |  22.50 |      - |      - |      - |    3016 B |          NA |
-|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |        Default |     Default | 100000 | 579,383.7 ns |  1,411.70 ns | 579,071.5 ns |  22.48 |      - |      - |      - |    3016 B |          NA |
-|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |        Default |     Default | 100000 |  47,480.0 ns |     92.40 ns |  47,462.3 ns |   1.84 | 0.2441 | 0.1221 |      - |    1646 B |          NA |
+# Dynamically compiled function execution
+
+## Description
+This benchmark compares different methods of compiling and executing a static/instance delegate adding two integers built dynamically, equivalent to:
+```csharp
+int a = 2;
+
+for (int i = 0; i < loops; i++)
+{
+	int sum = a + i;
+}
+```
+
+The idea here is to determine the number of loops before which the compilation is the main driver for the compilation/duration duration.
+
+|                        Method |              Runtime |  Loops |       Mean |     StdDev | Ratio |   Gen0 |   Gen1 |   Gen2 | Allocated | Alloc Ratio |
+|------------------------------ |--------------------- |------- |-----------:|-----------:|------:|-------:|-------:|-------:|----------:|------------:|
+|                    NoFunction |             .NET 7.0 |  10000 |   2.019 us |  0.0044 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction |             .NET 7.0 |  10000 |   2.022 us |  0.0066 us |  1.00 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate |             .NET 7.0 |  10000 |  27.528 us |  0.1412 us | 13.63 | 0.0916 | 0.0610 |      - |    1199 B |          NA |
+| DynamicMethodInstanceDelegate |             .NET 7.0 |  10000 |  23.859 us |  0.3422 us | 11.82 | 0.0916 | 0.0610 |      - |    1215 B |          NA |
+|     DynamicTypeStaticDelegate |             .NET 7.0 |  10000 | 184.379 us | 31.9035 us |     ? | 0.3662 | 0.1221 |      - |    5296 B |           ? |
+|   DynamicTypeInstanceDelegate |             .NET 7.0 |  10000 | 183.393 us | 32.2308 us |     ? | 0.3662 | 0.1221 |      - |    5624 B |           ? |
+|           ExpressionTreeBuilt |             .NET 7.0 |  10000 |  22.008 us |  0.2025 us | 10.90 | 0.3662 | 0.3357 |      - |    4783 B |          NA |
+|      ExpressionTreeFromLambda |             .NET 7.0 |  10000 |  31.947 us |  0.1951 us | 15.82 | 0.3662 | 0.3052 |      - |    4847 B |          NA |
+|       LoopDynamicMethodStatic |             .NET 7.0 |  10000 |  48.854 us |  0.6664 us | 24.19 | 0.1831 | 0.1221 |      - |    2831 B |          NA |
+|     LoopDynamicMethodInstance |             .NET 7.0 |  10000 |  48.669 us |  0.6067 us | 24.10 | 0.1831 | 0.1221 |      - |    2831 B |          NA |
+|     LoopDynamicMethodEmbedded |             .NET 7.0 |  10000 |  19.296 us |  0.4720 us |  9.52 | 0.0916 | 0.0610 |      - |    1506 B |          NA |
+|                               |                      |        |            |            |       |        |        |        |           |             |
+|                    NoFunction | .NET Framework 4.7.2 |  10000 |   2.025 us |  0.0074 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction | .NET Framework 4.7.2 |  10000 |   2.020 us |  0.0040 us |  1.00 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |  10000 |  25.026 us |  0.0660 us | 12.36 | 0.1831 | 0.0916 |      - |    1266 B |          NA |
+| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |  10000 |  18.990 us |  0.0970 us |  9.37 | 0.1831 | 0.0916 |      - |    1282 B |          NA |
+|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 |  10000 | 206.167 us | 31.7855 us |     ? | 0.9766 | 0.2441 |      - |    6460 B |           ? |
+|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 |  10000 | 205.644 us | 31.4980 us |     ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
+|           ExpressionTreeBuilt | .NET Framework 4.7.2 |  10000 |  21.914 us |  0.4297 us | 10.85 | 0.8240 | 0.3967 | 0.0305 |    5316 B |          NA |
+|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |  10000 |  26.942 us |  0.1031 us | 13.30 | 0.7935 | 0.3967 | 0.0305 |    5041 B |          NA |
+|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |  10000 |  95.329 us |  1.3010 us | 47.04 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
+|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |  10000 |  94.306 us |  0.9592 us | 46.51 | 0.3662 | 0.2441 |      - |    3048 B |          NA |
+|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |  10000 |  20.471 us |  0.1133 us | 10.11 | 0.2441 | 0.1221 |      - |    1645 B |          NA |
+|                               |                      |        |            |            |       |        |        |        |           |             |
+|                    NoFunction |             .NET 7.0 |  50000 |  10.097 us |  0.0646 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction |             .NET 7.0 |  50000 |  10.102 us |  0.0412 us |  1.00 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate |             .NET 7.0 |  50000 | 100.737 us |  0.1374 us |  9.97 |      - |      - |      - |    1176 B |          NA |
+| DynamicMethodInstanceDelegate |             .NET 7.0 |  50000 |  70.217 us |  0.9016 us |  6.96 |      - |      - |      - |    1192 B |          NA |
+|     DynamicTypeStaticDelegate |             .NET 7.0 |  50000 | 191.741 us | 13.5252 us |     ? | 0.2441 |      - |      - |    5312 B |           ? |
+|   DynamicTypeInstanceDelegate |             .NET 7.0 |  50000 | 173.022 us | 13.7605 us |     ? | 0.2441 |      - |      - |    5640 B |           ? |
+|           ExpressionTreeBuilt |             .NET 7.0 |  50000 |  54.510 us |  0.4416 us |  5.40 | 0.3662 | 0.3052 |      - |    4783 B |          NA |
+|      ExpressionTreeFromLambda |             .NET 7.0 |  50000 |  94.837 us |  0.2135 us |  9.39 | 0.3662 | 0.2441 |      - |    4847 B |          NA |
+|       LoopDynamicMethodStatic |             .NET 7.0 |  50000 |  98.346 us |  2.0101 us |  9.79 | 0.1221 |      - |      - |    2818 B |          NA |
+|     LoopDynamicMethodInstance |             .NET 7.0 |  50000 |  97.319 us |  0.6586 us |  9.64 | 0.1221 |      - |      - |    2818 B |          NA |
+|     LoopDynamicMethodEmbedded |             .NET 7.0 |  50000 |  26.572 us |  0.2635 us |  2.63 | 0.0916 | 0.0610 |      - |    1506 B |          NA |
+|                               |                      |        |            |            |       |        |        |        |           |             |
+|                    NoFunction | .NET Framework 4.7.2 |  50000 |  10.077 us |  0.0135 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction | .NET Framework 4.7.2 |  50000 |  10.073 us |  0.0111 us |  1.00 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 |  50000 |  91.915 us |  0.3155 us |  9.12 | 0.1221 | 0.1221 |      - |    1259 B |          NA |
+| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 |  50000 |  60.905 us |  0.1451 us |  6.05 | 0.1221 | 0.1221 |      - |    1276 B |          NA |
+|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 |  50000 | 206.942 us | 14.3653 us |     ? | 0.9766 | 0.2441 |      - |    6460 B |           ? |
+|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 |  50000 | 187.147 us |  9.0823 us |     ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
+|           ExpressionTreeBuilt | .NET Framework 4.7.2 |  50000 |  55.559 us |  0.1278 us |  5.52 | 0.7935 | 0.3662 |      - |    5316 B |          NA |
+|      ExpressionTreeFromLambda | .NET Framework 4.7.2 |  50000 |  86.209 us |  0.4082 us |  8.56 | 0.7324 | 0.3662 |      - |    5039 B |          NA |
+|       LoopDynamicMethodStatic | .NET Framework 4.7.2 |  50000 | 246.268 us |  4.0862 us | 24.47 |      - |      - |      - |    3012 B |          NA |
+|     LoopDynamicMethodInstance | .NET Framework 4.7.2 |  50000 | 246.080 us |  3.5799 us | 24.40 | 0.2441 | 0.2441 |      - |    3036 B |          NA |
+|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 |  50000 |  28.067 us |  0.1510 us |  2.79 | 0.2441 | 0.1221 |      - |    1645 B |          NA |
+|                               |                      |        |            |            |       |        |        |        |           |             |
+|                    NoFunction |             .NET 7.0 | 100000 |  20.145 us |  0.0378 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction |             .NET 7.0 | 100000 |  20.321 us |  0.3031 us |  1.01 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate |             .NET 7.0 | 100000 | 174.793 us |  0.4228 us |  8.68 |      - |      - |      - |    1176 B |          NA |
+| DynamicMethodInstanceDelegate |             .NET 7.0 | 100000 | 131.869 us |  0.2016 us |  6.55 |      - |      - |      - |    1192 B |          NA |
+|     DynamicTypeStaticDelegate |             .NET 7.0 | 100000 | 286.238 us | 13.2977 us |     ? | 0.2441 |      - |      - |    5312 B |           ? |
+|   DynamicTypeInstanceDelegate |             .NET 7.0 | 100000 | 251.118 us | 21.6477 us |     ? | 0.2441 |      - |      - |    5640 B |           ? |
+|           ExpressionTreeBuilt |             .NET 7.0 | 100000 |  94.482 us |  0.2254 us |  4.69 | 0.3662 | 0.2441 |      - |    4783 B |          NA |
+|      ExpressionTreeFromLambda |             .NET 7.0 | 100000 | 177.554 us |  0.3448 us |  8.81 | 0.2441 |      - |      - |    4839 B |          NA |
+|       LoopDynamicMethodStatic |             .NET 7.0 | 100000 | 159.683 us |  0.3452 us |  7.93 |      - |      - |      - |    2792 B |          NA |
+|     LoopDynamicMethodInstance |             .NET 7.0 | 100000 | 159.789 us |  0.3367 us |  7.93 |      - |      - |      - |    2792 B |          NA |
+|     LoopDynamicMethodEmbedded |             .NET 7.0 | 100000 |  34.503 us |  0.1325 us |  1.71 | 0.0610 |      - |      - |    1500 B |          NA |
+|                               |                      |        |            |            |       |        |        |        |           |             |
+|                    NoFunction | .NET Framework 4.7.2 | 100000 |  20.127 us |  0.0346 us |  1.00 |      - |      - |      - |         - |          NA |
+|                StaticFunction | .NET Framework 4.7.2 | 100000 |  20.149 us |  0.0467 us |  1.00 |      - |      - |      - |         - |          NA |
+|   DynamicMethodStaticDelegate | .NET Framework 4.7.2 | 100000 | 176.056 us |  0.8218 us |  8.75 |      - |      - |      - |    1244 B |          NA |
+| DynamicMethodInstanceDelegate | .NET Framework 4.7.2 | 100000 | 113.708 us |  0.2026 us |  5.65 | 0.1221 | 0.1221 |      - |    1276 B |          NA |
+|     DynamicTypeStaticDelegate | .NET Framework 4.7.2 | 100000 | 281.382 us | 10.6636 us |     ? | 0.9766 |      - |      - |    6428 B |           ? |
+|   DynamicTypeInstanceDelegate | .NET Framework 4.7.2 | 100000 | 238.085 us | 12.9106 us |     ? | 0.9766 | 0.2441 |      - |    6700 B |           ? |
+|           ExpressionTreeBuilt | .NET Framework 4.7.2 | 100000 |  98.197 us |  0.3003 us |  4.88 | 0.7324 | 0.3662 |      - |    5314 B |          NA |
+|      ExpressionTreeFromLambda | .NET Framework 4.7.2 | 100000 | 159.754 us |  0.5082 us |  7.93 | 0.7324 | 0.2441 |      - |    5040 B |          NA |
+|       LoopDynamicMethodStatic | .NET Framework 4.7.2 | 100000 | 436.453 us |  6.9390 us | 21.75 |      - |      - |      - |    3012 B |          NA |
+|     LoopDynamicMethodInstance | .NET Framework 4.7.2 | 100000 | 434.824 us |  4.6301 us | 21.62 |      - |      - |      - |    3012 B |          NA |
+|     LoopDynamicMethodEmbedded | .NET Framework 4.7.2 | 100000 |  37.588 us |  0.2083 us |  1.87 | 0.2441 | 0.1221 |      - |    1645 B |          NA |
+
+## Conclusions
+- At 10K, ratio is 9.52, at 50K: 2.6, at 100K: 1.71 4* faster than the dynamic method instance delegate case
+- Performance .NET 7.0 gets better vs .NET Framework 4.7.2 as loops increases

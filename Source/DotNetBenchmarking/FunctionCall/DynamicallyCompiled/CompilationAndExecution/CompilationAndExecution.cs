@@ -13,7 +13,7 @@ namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 [MemoryDiagnoser]
 public class CompilationAndExecution
 {
-    [Params(1_000, 10_000, 100_000)]
+    [Params(10_000, 50_000, 100_000)]
     public int Loops { get; set; }
 
     [Benchmark(Baseline = true)]
