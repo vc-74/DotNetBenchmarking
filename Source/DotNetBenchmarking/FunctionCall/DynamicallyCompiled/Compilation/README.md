@@ -1,4 +1,5 @@
-# Add delegate compilation
+# Dynamically compiled function compilation
+
 ## Description
 This benchmark compares different methods of building a static/instance delegates adding two integers dynamically, equivalent to:
 ```csharp

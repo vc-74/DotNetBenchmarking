@@ -1,4 +1,4 @@
-# Statically compiled Add function execution
+# Statically compiled function execution
 
 ## Description
 This benchmark compares different methods of executing statically compiled code calculating the sum of two integers, equivalent to:
