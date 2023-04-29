@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace DotNetBenchmarking.FunctionCall.UnitTests;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled.UnitTests;
 
 /// <summary>
 /// <see cref="AddLoopMethodFactory"/> tests.

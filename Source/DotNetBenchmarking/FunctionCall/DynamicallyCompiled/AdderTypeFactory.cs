@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 
-namespace DotNetBenchmarking.FunctionCall;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 
 /// <summary>
 /// Builds adder types with an Add method adding two integers.
@@ -33,7 +33,7 @@ internal static class AdderTypeFactory
     /// <param name="buildModule">Indicates whether the default module builder can be reused (false) or a new one has to be created (true).</param>
     /// <param name="delegateType">Type of delegate to build.</param>
     /// <returns>The delegate instance.</returns>
-    public static TakesTwoIntsReturnsInt GetAdd(bool buildModule, DelegateType delegateType)
+    public static TakesTwoIntsReturnsInt GetAdd(bool buildModule, DelegateInstanceType delegateType)
     {
         _builtMethodCount++;
 
@@ -56,12 +56,12 @@ internal static class AdderTypeFactory
 
         switch (delegateType)
         {
-            case DelegateType.Static:
+            case DelegateInstanceType.Static:
                 addMethodBuilder = typeBuilder.DefineMethod("Add", MethodAttributes.Static | MethodAttributes.Public | MethodAttributes.HideBySig,
                     typeof(int), _inputParameterTypes);
                 break;
 
-            case DelegateType.Instance:
+            case DelegateInstanceType.Instance:
                 ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.Public,
                     CallingConventions.Standard, Type.EmptyTypes);
 
@@ -78,7 +78,7 @@ internal static class AdderTypeFactory
 
         ILGenerator addILGenerator = addMethodBuilder.GetILGenerator();
 
-        if (delegateType == DelegateType.Static)
+        if (delegateType == DelegateInstanceType.Static)
         {
             addILGenerator.Emit(OpCodes.Ldarg_0);
             addILGenerator.Emit(OpCodes.Ldarg_1);
@@ -95,7 +95,7 @@ internal static class AdderTypeFactory
         Type type = typeBuilder.CreateType();
         MethodInfo method = type.GetMethods()[0];
 
-        if (delegateType == DelegateType.Static)
+        if (delegateType == DelegateInstanceType.Static)
         {
             return (TakesTwoIntsReturnsInt)method.CreateDelegate(typeof(TakesTwoIntsReturnsInt));
         }

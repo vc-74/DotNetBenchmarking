@@ -25,27 +25,27 @@ public class HashSetVsList
     public void ListFound()
     {
         string toSearch = (KeyCount / 2).ToString();
-        bool b = _keys.Contains(toSearch);
+        bool _ = _keys.Contains(toSearch);
     }
 
     [Benchmark]
     public void ListNotFound()
     {
         string toSearch = (KeyCount + 1).ToString();
-        bool b = _keys.Contains(toSearch);
+        bool _ = _keys.Contains(toSearch);
     }
 
     [Benchmark]
     public void SetFound()
     {
         string toSearch = (KeyCount / 2).ToString();
-        bool b = _set.Contains(toSearch);
+        bool _ = _set.Contains(toSearch);
     }
 
     [Benchmark]
     public void SetNotFound()
     {
         string toSearch = (KeyCount + 1).ToString();
-        bool b = _set.Contains(toSearch);
+        bool _ = _set.Contains(toSearch);
     }
 }

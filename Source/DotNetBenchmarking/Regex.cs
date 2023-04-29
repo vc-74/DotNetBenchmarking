@@ -1,13 +1,16 @@
 ﻿using System.Text.RegularExpressions;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 
 namespace DotNetBenchmarking;
 
 /// <summary>
 /// Compares different methods of building and executing a regular expression.
 /// </summary>
+[SimpleJob(RuntimeMoniker.Net472)]
+[SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
-public partial class RegexTests
+public partial class Regex
 {
     [Benchmark(Baseline = true)]
     public void Manual()
@@ -130,7 +133,7 @@ public partial class RegexTests
             throw new ArgumentException("Invalid input", nameof(input));
         }
 
-        string yearPart = input.Substring(0, hyphenPosition);
+        string yearPart = input[..hyphenPosition];
         if (!int.TryParse(yearPart, out year))
         {
             throw new ArgumentException("Invalid input", nameof(input));
@@ -139,7 +142,7 @@ public partial class RegexTests
         int cybmPosition = input.IndexOf(" [", hyphenPosition);
         if (cybmPosition == -1)
         {
-            string monthPart = input.Substring(hyphenPosition + 1);
+            string monthPart = input[(hyphenPosition + 1)..];
             if (!int.TryParse(monthPart, out month))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
@@ -303,9 +306,15 @@ public partial class RegexTests
             throw new Exception();
         }
     }
-    private static readonly Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$");
+#if NET7_0
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$");
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+#else
+    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$");
+#endif
 
-    private static void OldRegex(string input, Regex regex, out int year, out int month, out int? cybm)
+    private static void OldRegex(string input, System.Text.RegularExpressions.Regex regex, out int year, out int month, out int? cybm)
     {
         Match match = regex.Match(input);
         if (!match.Success)
@@ -341,7 +350,13 @@ public partial class RegexTests
             throw new Exception();
         }
     }
-    private static readonly Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$", RegexOptions.Compiled);
+#if NET7_0
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$", RegexOptions.Compiled);
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+#else
+    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$", RegexOptions.Compiled);
+#endif
 
 
 #if NET7_0
@@ -358,7 +373,7 @@ public partial class RegexTests
     }
 
     [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$")]
-    private static partial Regex GetRegex();
+    private static partial System.Text.RegularExpressions.Regex GetRegex();
 
     [Benchmark]
     public void RegexNotCompiledSpan()
@@ -372,7 +387,7 @@ public partial class RegexTests
         }
     }
 
-    private static void RegexSpan(string input, Regex regex, out int year, out int month, out int? cybm)
+    private static void RegexSpan(string input, System.Text.RegularExpressions.Regex regex, out int year, out int month, out int? cybm)
     {
         Match match = regex.Match(input);
         if (!match.Success)

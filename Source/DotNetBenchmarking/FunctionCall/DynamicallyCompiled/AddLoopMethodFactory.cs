@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 
-namespace DotNetBenchmarking.FunctionCall;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 
 /// <summary>
 /// Prototype for functions doing a certain number of integer additions (loops).
@@ -67,7 +67,7 @@ internal static class AddLoopMethodFactory
         {
             // Get the delegate and store it in a local variable
             addLocal = ILGenerator.DeclareLocal(typeof(TakesTwoIntsReturnsInt));
-            ILGenerator.Emit(OpCodes.Ldc_I4, (int)DelegateType.Instance);
+            ILGenerator.Emit(OpCodes.Ldc_I4, (int)DelegateInstanceType.Instance);
             ILGenerator.Emit(OpCodes.Call, _AddMethodFactoryGetFromDynamicMethodMethod);
             ILGenerator.Emit(OpCodes.Stloc, addLocal);
         }
@@ -152,7 +152,7 @@ internal static class AddLoopMethodFactory
         {
             // Get the delegate and store it in a local variable
             addLocal = ILGenerator.DeclareLocal(typeof(TakesTwoIntsReturnsInt));
-            ILGenerator.Emit(OpCodes.Ldc_I4, (int)DelegateType.Instance);
+            ILGenerator.Emit(OpCodes.Ldc_I4, (int)DelegateInstanceType.Instance);
             ILGenerator.Emit(OpCodes.Call, _AddMethodFactoryGetFromDynamicMethodMethod);
             ILGenerator.Emit(OpCodes.Stloc, addLocal);
         }

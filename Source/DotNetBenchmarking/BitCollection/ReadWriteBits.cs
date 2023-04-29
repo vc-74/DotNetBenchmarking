@@ -19,7 +19,7 @@ public class ReadWriteBits
         Test(span);
     }
 
-    private void Test(Span<bool> span)
+    private static void Test(Span<bool> span)
     {
         for (int i = 0; i < span.Length; i++)
         {

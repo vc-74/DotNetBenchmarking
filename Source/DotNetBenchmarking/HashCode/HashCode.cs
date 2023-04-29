@@ -7,7 +7,7 @@ namespace DotNetBenchmarking.HashCode;
 /// Compares methods of calculating a hash code.
 /// </summary>
 [MemoryDiagnoser]
-public class HashCodeTests
+public class HashCode
 {
     /// <summary>
     /// Number of elements in a bit collection.
@@ -18,7 +18,7 @@ public class HashCodeTests
     [Benchmark(Baseline = true)]
     public void HashCodeTest()
     {
-        int hashCode = System.HashCode.Combine("CollectionName", DayOfWeek.Wednesday, 1, (object?)null, 3);
+        int _ = System.HashCode.Combine("CollectionName", DayOfWeek.Wednesday, 1, (object?)null, 3).GetHashCode();
     }
 
     [Benchmark]
@@ -31,7 +31,7 @@ public class HashCodeTests
         result += null;
         result += 3;
 
-        int hashCode = result;
+        int _ = result.GetHashCode();
     }
 }
 #endif

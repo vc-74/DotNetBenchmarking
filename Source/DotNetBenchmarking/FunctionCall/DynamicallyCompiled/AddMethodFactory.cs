@@ -2,12 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace DotNetBenchmarking.FunctionCall;
-
-/// <summary>
-/// Prototype for functions taking two integers in parameter and returning an integer.
-/// </summary>
-public delegate int TakesTwoIntsReturnsInt(int a, int b);
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 
 /// <summary>
 /// Builds <see cref="TakesTwoIntsReturnsInt"/> delegate instances adding integers.
@@ -19,11 +14,11 @@ public static class AddMethodFactory
     /// </summary>
     /// <param name="delegateType">Type of delegate to build.</param>
     /// <returns>The delegate instance.</returns>
-    public static TakesTwoIntsReturnsInt GetFromDynamicMethod(DelegateType delegateType)
+    public static TakesTwoIntsReturnsInt GetFromDynamicMethod(DelegateInstanceType delegateType)
     {
         switch (delegateType)
         {
-            case DelegateType.Instance:
+            case DelegateInstanceType.Instance:
                 {
                     DynamicMethod addDynamicMethod = new("Add",
                         MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,
@@ -41,7 +36,7 @@ public static class AddMethodFactory
                     return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt), _delegateTarget);
                 }
 
-            case DelegateType.Static:
+            case DelegateInstanceType.Static:
                 {
                     DynamicMethod addDynamicMethod = new("Add",
                         MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,

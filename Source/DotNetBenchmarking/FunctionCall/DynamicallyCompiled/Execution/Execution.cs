@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Jobs;
 
-namespace DotNetBenchmarking.FunctionCall.Addition.DynamicallyCompiled;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 
 /// <summary>
 /// Compares methods of calling dymanic functions (late binding).
@@ -16,11 +16,11 @@ public class Execution
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _addDynamicMethodStatic = AddMethodFactory.GetFromDynamicMethod(DelegateType.Static);
-        _addDynamicMethodInstance = AddMethodFactory.GetFromDynamicMethod(DelegateType.Instance);
+        _addDynamicMethodStatic = AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Static);
+        _addDynamicMethodInstance = AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Instance);
 
-        _addTypeMethodStatic = AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Static);
-        _addTypeMethodInstance = AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Instance);
+        _addTypeMethodStatic = AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Static);
+        _addTypeMethodInstance = AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Instance);
 
         _addExpressionTreeBuilt = AddMethodFactory.GetFromExpressionTree(useLambda: false);
         _addExpressionTreeFromLambda = AddMethodFactory.GetFromExpressionTree(useLambda: true);
@@ -41,12 +41,12 @@ public class Execution
     [Benchmark(Baseline = true)]
     public void NoFunction()
     {
-        int a = 1, b = 1;
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = a + b;
+            int _ = a + i;
         }
     }
 
@@ -55,11 +55,11 @@ public class Execution
 
     private static void StaticFunction(int loops)
     {
-        int a = 1, b = 1;
+        int a = 1;
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = a + b;
+            int _ = a + i;
         }
     }
 
@@ -68,12 +68,12 @@ public class Execution
 
     private void Execute(TakesTwoIntsReturnsInt add)
     {
-        int a = 1, b = 1;
+        int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            add(a, b);
+            add(a, i);
         }
     }
 

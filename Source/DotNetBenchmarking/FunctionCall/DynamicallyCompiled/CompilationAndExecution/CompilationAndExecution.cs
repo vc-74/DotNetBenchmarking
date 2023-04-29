@@ -2,14 +2,14 @@
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Jobs;
 
-namespace DotNetBenchmarking.FunctionCall.Addition.DynamicallyCompiled;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled;
 
 /// <summary>
 /// Compares methods of calling dymanic functions (late binding).
 /// </summary>
 [SimpleJob(RuntimeMoniker.Net472)]
 [SimpleJob(RuntimeMoniker.Net70)]
-[HideColumns(Column.Job, Column.Error, Column.RatioSD)]
+[HideColumns(Column.Job, Column.Error, Column.RatioSD, Column.IterationCount, Column.WarmupCount)]
 [MemoryDiagnoser]
 public class CompilationAndExecution
 {
@@ -24,7 +24,7 @@ public class CompilationAndExecution
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = a + i;
+            int _ = a + i;
         }
     }
 
@@ -37,12 +37,12 @@ public class CompilationAndExecution
 
         for (int i = 0; i < loops; i++)
         {
-            int sum = a + i;
+            int _ = a + i;
         }
     }
 
     [Benchmark]
-    public void DynamicMethodStaticDelegate() => Execute(AddMethodFactory.GetFromDynamicMethod(DelegateType.Static));
+    public void DynamicMethodStaticDelegate() => Execute(AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Static));
 
     private void Execute(TakesTwoIntsReturnsInt add)
     {
@@ -56,7 +56,7 @@ public class CompilationAndExecution
     }
 
     [Benchmark]
-    public void DynamicMethodInstanceDelegate() => Execute(AddMethodFactory.GetFromDynamicMethod(DelegateType.Instance));
+    public void DynamicMethodInstanceDelegate() => Execute(AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Instance));
 
     /// <summary>
     /// 
@@ -65,7 +65,7 @@ public class CompilationAndExecution
     [Benchmark]
     [WarmupCount(1)]
     [IterationCount(3)]
-    public void DynamicTypeStaticDelegate() => Execute(AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Static));
+    public void DynamicTypeStaticDelegate() => Execute(AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Static));
 
     /// <summary>
     /// 
@@ -74,7 +74,7 @@ public class CompilationAndExecution
     [Benchmark]
     [WarmupCount(1)]
     [IterationCount(3)]
-    public void DynamicTypeInstanceDelegate() => Execute(AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Instance));
+    public void DynamicTypeInstanceDelegate() => Execute(AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Instance));
 
     [Benchmark]
     public void ExpressionTreeBuilt() => Execute(AddMethodFactory.GetFromExpressionTree(useLambda: false));
@@ -86,20 +86,22 @@ public class CompilationAndExecution
     public void LoopDynamicMethodStatic()
     {
         AddLoop addLoop = AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.StaticDelegate);
-        addLoop(Loops);
+        Execute(addLoop);
     }
+
+    private void Execute(AddLoop addLoop) => addLoop(Loops);
 
     [Benchmark]
     public void LoopDynamicMethodInstance()
     {
         AddLoop addLoop = AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.InstanceDelegate);
-        addLoop(Loops);
+        Execute(addLoop);
     }
 
     [Benchmark]
     public void LoopDynamicMethodEmbedded()
     {
         AddLoop addLoop = AddLoopMethodFactory.GetFromDynamicMethod(AddLoopMethodFactory.AddImplementation.Embedded);
-        addLoop(Loops);
+        Execute(addLoop);
     }
 }

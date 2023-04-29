@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace DotNetBenchmarking.FunctionCall.UnitTests;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled.UnitTests;
 
 /// <summary>
 /// <see cref="AddMethodFactory"/> tests.
@@ -16,7 +16,7 @@ public class AddMethodFactoryTests
     [Fact]
     public void GetFromDynamicMethodStatic()
     {
-        TakesTwoIntsReturnsInt add = AddMethodFactory.GetFromDynamicMethod(DelegateType.Static);
+        TakesTwoIntsReturnsInt add = AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Static);
 
         MethodInfo builtMethod = add.Method;
 
@@ -57,7 +57,7 @@ public class AddMethodFactoryTests
     [Fact]
     public void GetFromDynamicMethodInstance()
     {
-        TakesTwoIntsReturnsInt add = AddMethodFactory.GetFromDynamicMethod(DelegateType.Instance);
+        TakesTwoIntsReturnsInt add = AddMethodFactory.GetFromDynamicMethod(DelegateInstanceType.Instance);
 
         MethodInfo builtMethod = add.Method;
 

@@ -29,7 +29,7 @@ public class RangeWhereSelectTests
     [Benchmark]
     public void EnumerableMethod()
     {
-        int[] indexes = GetIndexes().ToArray();
+        int[] _ = GetIndexes().ToArray();
     }
 
     private IEnumerable<int> GetIndexes()

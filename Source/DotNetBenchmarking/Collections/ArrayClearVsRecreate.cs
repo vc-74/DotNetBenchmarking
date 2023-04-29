@@ -16,7 +16,7 @@ public partial class ArrayClearVsRecreate
     {
         for (int i = 0; i < 1_000; i++)
         {
-            int[] array = new int[Count];
+            int[] _ = new int[Count];
         }
     }
 

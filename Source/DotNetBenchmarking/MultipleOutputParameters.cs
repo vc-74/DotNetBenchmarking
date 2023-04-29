@@ -15,7 +15,7 @@ public partial class MultipleOutputParameters
         for (int i = 0; i < 1_000; i++)
         {
             int x = 10, y = 3;
-            int quotient = Math.DivRem(x, y, out int remainder);
+            int _ = Math.DivRem(x, y, out int _);
         }
     }
 
@@ -25,7 +25,7 @@ public partial class MultipleOutputParameters
         for (int i = 0; i < 1_000; i++)
         {
             int x = 10, y = 3;
-            (int quotient, int remainder) = Math.DivRem(x, y);
+            (int _, int _) = Math.DivRem(x, y);
         }
     }
 }

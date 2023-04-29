@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace DotNetBenchmarking.FunctionCall.UnitTests;
+namespace DotNetBenchmarking.FunctionCall.DynamicallyCompiled.UnitTests;
 
 /// <summary>
 /// <see cref="AdderTypeFactory"/> tests.
@@ -16,7 +16,7 @@ public class AdderTypeFactoryTests
     [Fact]
     public void GetAddBuildModuleStatic()
     {
-        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Static);
+        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Static);
 
         MethodInfo builtMethod = add.Method;
         Type builtType = builtMethod.DeclaringType!;
@@ -62,7 +62,7 @@ public class AdderTypeFactoryTests
     [Fact]
     public void GetAddBuildModuleInstance()
     {
-        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: true, DelegateType.Instance);
+        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: true, DelegateInstanceType.Instance);
 
         MethodInfo builtMethod = add.Method;
         Type builtType = builtMethod.DeclaringType!;
@@ -91,7 +91,7 @@ public class AdderTypeFactoryTests
     [Fact]
     public void GetAddExistingModuleStatic()
     {
-        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: false, DelegateType.Static);
+        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: false, DelegateInstanceType.Static);
 
         MethodInfo builtMethod = add.Method;
         Type builtType = builtMethod.DeclaringType!;
@@ -120,7 +120,7 @@ public class AdderTypeFactoryTests
     [Fact]
     public void GetAddExistingModuleInstance()
     {
-        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: false, DelegateType.Instance);
+        TakesTwoIntsReturnsInt add = AdderTypeFactory.GetAdd(buildModule: false, DelegateInstanceType.Instance);
 
         MethodInfo builtMethod = add.Method;
         Type builtType = builtMethod.DeclaringType!;
