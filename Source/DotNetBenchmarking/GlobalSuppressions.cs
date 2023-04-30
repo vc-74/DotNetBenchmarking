@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.HashCode.HashCode")]
 #endif
 
-[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.Regex")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.Regex.Regex")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.PropertyVsField")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.StaticallyCompiled.Execution")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.Compilation")]

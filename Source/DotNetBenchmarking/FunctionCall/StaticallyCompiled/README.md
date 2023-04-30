@@ -1,30 +1,209 @@
 # Statically compiled function execution
 
 ## Description
-This benchmark compares different methods of executing statically compiled code calculating the sum of two integers, equivalent to:
-```csharp
-int a = 2;
+This collection of benchmarks compares different methods of executing statically compiled code calculating the sum of two integers.
 
-for (int i = 0; i < loops; i++)
+## Benchmarks
+### NoFunction
+Baseline implementation without using a function
+```csharp
+public void NoFunction()
 {
-	int sum = a + i;
+    int a = 1;
+
+    for (int i = 0; i < Loops; i++)
+    {
+        int _ = a + i;
+    }
 }
 ```
 
-|                       Method |                                                                     Description |
-|----------------------------- |-------------------------------------------------------------------------------- |
-|                   NoFunction |           Baseline implementation without using a function (same code as above) |
-|                 StaticMethod |                                         Addition implemented as a static method |
-|               InstanceMethod |                                      Addition implemented as an instance method |
-|                VirtualMethod |                               Addition implemented as a virtual instance method |
-|          StaticLocalFunction |                                   Addition implemented as a local static method |
-|        InstanceLocalFunction |                               Addition implemented as a local non-static method |
-| InstanceLocalFunctionCapture |               Addition implemented as a local method capturing a local variable |
-|                       Lambda |                               Addition implemented as a local lambda expression |
-|                LambdaCapture |    Addition implemented as a local lambda expression capturing a local variable |
-|         DelegateStaticMethod |                                       Addition implemented as a static delegate |
-|       DelegateInstanceMethod |            Addition implemented as an instance delegate on a non-virtual method |
-|        DelegateVirtualMethod |                Addition implemented as an instance delegate on a virtual method |
+## StaticMethod
+Addition implemented as a static method
+```csharp
+public void StaticMethod()
+{
+    int a = 1;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = AddStatic(a, i);
+    }
+}
+
+private static int AddStatic(int a, int b) => a + b;
+```
+
+## InstanceMethod
+Addition implemented as an instance non-virtual instance method
+```csharp
+public void InstanceMethod()
+{
+    int loops = Loops;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = AddInstance(i);
+    }
+}
+
+private int AddInstance(int b) => _a + b;
+private int _a = 1;
+```
+
+## VirtualMethod
+Addition implemented as a virtual instance method
+```csharp
+public void VirtualMethod()
+{
+    int loops = Loops;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = AddVirtual(i);
+    }
+}
+
+protected virtual int AddVirtual(int b) => _a + b;
+private int _a = 1;
+```
+
+## StaticLocalFunction
+Addition implemented as a local static method
+```csharp
+public void StaticLocalFunction()
+{
+    static int add(int a, int b) => a + b;
+
+    int a = 1;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(a, i);
+    }
+}
+```
+
+## InstanceLocalFunction
+Addition implemented as a local non-static method
+```csharp
+public void InstanceLocalFunction()
+{
+    int add(int b) => _a + b;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(i);
+    }
+}
+private int _a = 1;
+```
+
+## InstanceLocalFunctionCapture
+Addition implemented as a local method capturing a local variable
+```csharp
+public void InstanceLocalFunctionCapture()
+{
+    int a = 1;
+    int add(int b) => a + b;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(i);
+    }
+}
+```
+
+## Lambda
+Addition implemented as a local lambda expression
+```csharp
+public void Lambda()
+{
+    Func<int, int, int> add = (a, b) => a + b;
+
+    int a = 1;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(a, i);
+    }
+}
+```
+
+## LambdaCapture
+Addition implemented as a local lambda expression capturing a local variable
+```csharp
+public void LambdaCapture()
+{
+    int a = 1;
+    Func<int, int> add = b => a + b;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(i);
+    }
+}
+```
+
+## DelegateStaticMethod
+Addition implemented as a static delegate
+```csharp
+public delegate int TakesTwoIntsReturnsInt(int a, int b);
+
+public void DelegateStaticMethod()
+{
+    TakesTwoIntsReturnsInt add = AddStatic;
+
+    int a = 1;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(a, i);
+    }
+}
+
+private static int AddStatic(int a, int b) => a + b;
+```
+
+## DelegateInstanceMethod
+Addition implemented as an instance delegate on a non-virtual instance method
+```csharp
+public delegate int TakesTwoIntsReturnsInt(int a, int b);
+
+public void DelegateInstanceMethod()
+{
+    TakesOneIntReturnsInt add = AddInstance;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(i);
+    }
+}
+
+private int AddInstance(int b) => _a + b;
+private int _a = 1;
+```
+
+## DelegateVirtualMethod
+Addition implemented as an instance delegate on a virtual instance method
+```csharp
+public delegate int TakesTwoIntsReturnsInt(int a, int b);
+
+public void DelegateVirtualMethod()
+{
+    TakesOneIntReturnsInt add = AddVirtual;
+
+    int loops = Loops;
+
+    for (int i = 0; i < loops; i++)
+    {
+        int _ = add(i);
+    }
+}
+
+protected virtual int AddVirtual(int b) => _a + b;
+private int _a = 1;
+```
 
 ## Environment
 <p>

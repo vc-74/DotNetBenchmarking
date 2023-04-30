@@ -43,7 +43,7 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            AddStatic(a, i);
+            int _ = AddStatic(a, i);
         }
     }
 
@@ -59,7 +59,7 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            AddInstance(i);
+            int _ = AddInstance(i);
         }
     }
 
@@ -79,7 +79,7 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            AddVirtual(i);
+            int _ = AddVirtual(i);
         }
     }
 
@@ -91,14 +91,14 @@ public class Execution
     [Benchmark]
     public void StaticLocalFunction()
     {
-        static int LocalAddStatic(int a, int b) => a + b;
+        static int addLocal(int a, int b) => a + b;
 
         int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = LocalAddStatic(a, i);
+            int _ = addLocal(a, i);
         }
     }
 
@@ -108,13 +108,13 @@ public class Execution
     [Benchmark]
     public void InstanceLocalFunction()
     {
-        int LocalAddInstance(int b) => _a + b;
+        int addLocal(int b) => _a + b;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = LocalAddInstance(i);
+            int _ = addLocal(i);
         }
     }
 
@@ -125,13 +125,13 @@ public class Execution
     public void InstanceLocalFunctionCapture()
     {
         int a = 1;
-        int LocalAdd(int b) => a + b;
+        int addLocal(int b) => a + b;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = LocalAdd(i);
+            int _ = addLocal(i);
         }
     }
 
@@ -142,7 +142,7 @@ public class Execution
     public void Lambda()
     {
 #pragma warning disable IDE0039 // Use local function
-        Func<int, int, int> LambdaAdd = (a, b) => a + b;
+        Func<int, int, int> add = (a, b) => a + b;
 #pragma warning restore IDE0039 // Use local function
 
         int a = 1;
@@ -150,7 +150,7 @@ public class Execution
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = LambdaAdd(a, i);
+            int _ = add(a, i);
         }
     }
 
@@ -162,14 +162,14 @@ public class Execution
     {
         int a = 1;
 #pragma warning disable IDE0039 // Use local function
-        Func<int, int> LambdaAdd = b => a + b;
+        Func<int, int> add = b => a + b;
 #pragma warning restore IDE0039 // Use local function
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = LambdaAdd(i);
+            int _ = add(i);
         }
     }
 
@@ -179,14 +179,14 @@ public class Execution
     [Benchmark]
     public void DelegateStaticMethod()
     {
-        TakesTwoIntsReturnsInt StaticDelegateAdd = AddStatic;
+        TakesTwoIntsReturnsInt add = AddStatic;
 
         int a = 1;
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = StaticDelegateAdd(a, i);
+            int _ = add(a, i);
         }
     }
 
@@ -196,13 +196,13 @@ public class Execution
     [Benchmark]
     public void DelegateInstanceMethod()
     {
-        TakesOneIntReturnsInt InstanceDelegateAdd = AddInstance;
+        TakesOneIntReturnsInt add = AddInstance;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = InstanceDelegateAdd(i);
+            int _ = add(i);
         }
     }
 
@@ -212,13 +212,13 @@ public class Execution
     [Benchmark]
     public void DelegateVirtualMethod()
     {
-        TakesOneIntReturnsInt InstanceDelegateAdd = AddVirtual;
+        TakesOneIntReturnsInt add = AddVirtual;
 
         int loops = Loops;
 
         for (int i = 0; i < loops; i++)
         {
-            int _ = InstanceDelegateAdd(i);
+            int _ = add(i);
         }
     }
 }

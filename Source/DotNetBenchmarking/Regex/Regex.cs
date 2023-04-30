@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace DotNetBenchmarking;
+namespace DotNetBenchmarking.Regex;
 
 /// <summary>
 /// Compares different methods of building and executing a regular expression.
@@ -12,22 +12,26 @@ namespace DotNetBenchmarking;
 [MemoryDiagnoser]
 public partial class Regex
 {
+    /// <summary>
+    /// Parses the input string by scanning character by character.
+    /// </summary>
     [Benchmark(Baseline = true)]
     public void Manual()
     {
-        const string input = "2008-8 [2]";
-        Manual(input, out int year, out int month, out int? cybm);
+        const string input = "2008-8 [3]";
+        (int year, int month, int? quarter) = Manual(input);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    private static void Manual(string input, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) Manual(string input)
     {
-        bool inYear = true, inMonth = false, inCybm = false;
-        year = 0; month = 0; cybm = 0;
+        bool inYear = true, inMonth = false, inQuarter = false;
+        int year = 0, month = 0;
+        int? quarter = null;
 
         int i = 0;
         int value = 0;
@@ -71,7 +75,7 @@ public partial class Regex
                                     month = value;
                                     value = 0;
                                     inMonth = false;
-                                    inCybm = true;
+                                    inQuarter = true;
                                 }
                                 else
                                 {
@@ -98,9 +102,9 @@ public partial class Regex
         {
             month = value;
         }
-        else if (inCybm)
+        else if (inQuarter)
         {
-            cybm = value;
+            quarter = value;
         }
         else
         {
@@ -111,21 +115,26 @@ public partial class Regex
         {
             throw new ArgumentException("Invalid input", nameof(input));
         }
+
+        return (year, month, quarter);
     }
 
+    /// <summary>
+    /// Parses the input string by using `IndexOf`.
+    /// </summary>
     [Benchmark]
     public void IndexOfString()
     {
         const string input = "2008-8 [2]";
-        IndexOfString(input, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = IndexOfString(input);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    private static void IndexOfString(string input, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) IndexOfString(string input)
     {
         int hyphenPosition = input.IndexOf('-');
         if (hyphenPosition == -1)
@@ -134,13 +143,16 @@ public partial class Regex
         }
 
         string yearPart = input[..hyphenPosition];
-        if (!int.TryParse(yearPart, out year))
+        if (!int.TryParse(yearPart, out int year))
         {
             throw new ArgumentException("Invalid input", nameof(input));
         }
 
-        int cybmPosition = input.IndexOf(" [", hyphenPosition);
-        if (cybmPosition == -1)
+        int month;
+        int? quarter;
+
+        int quarterPosition = input.IndexOf(" [", hyphenPosition);
+        if (quarterPosition == -1)
         {
             string monthPart = input[(hyphenPosition + 1)..];
             if (!int.TryParse(monthPart, out month))
@@ -148,7 +160,7 @@ public partial class Regex
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            cybm = null;
+            quarter = null;
         }
         else
         {
@@ -157,35 +169,40 @@ public partial class Regex
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            string monthPart = input.Substring(hyphenPosition + 1, cybmPosition - hyphenPosition - 1);
+            string monthPart = input.Substring(hyphenPosition + 1, quarterPosition - hyphenPosition - 1);
             if (!int.TryParse(monthPart, out month))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            string cybmPart = input.Substring(cybmPosition + 2, input.Length - cybmPosition - 3);
-            if (!int.TryParse(cybmPart, out int cybmValue))
+            string quarterPart = input.Substring(quarterPosition + 2, input.Length - quarterPosition - 3);
+            if (!int.TryParse(quarterPart, out int quarterValue))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
-            cybm = cybmValue;
+            quarter = quarterValue;
         }
+
+        return (year, month, quarter);
     }
 
 #if NET7_0
+    /// <summary>
+    /// Parses the input string by using `IndexOf` on ranges.
+    /// </summary>
     [Benchmark]
     public void IndexOfRanges()
     {
         const string input = "2008-8 [2]";
-        IndexOfRanges(input, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = IndexOfRanges(input);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    private static void IndexOfRanges(string input, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) IndexOfRanges(string input)
     {
         int hyphenPosition = input.IndexOf('-');
         if (hyphenPosition == -1)
@@ -194,13 +211,16 @@ public partial class Regex
         }
 
         string yearPart = input[..hyphenPosition];
-        if (!int.TryParse(yearPart, out year))
+        if (!int.TryParse(yearPart, out int year))
         {
             throw new ArgumentException("Invalid input", nameof(input));
         }
 
-        int cybmPosition = input.IndexOf(" [", hyphenPosition);
-        if (cybmPosition == -1)
+        int month;
+        int? quarter;
+
+        int quarterPosition = input.IndexOf(" [", hyphenPosition);
+        if (quarterPosition == -1)
         {
             string monthPart = input[(hyphenPosition + 2)..];
             if (!int.TryParse(monthPart, out month))
@@ -208,7 +228,7 @@ public partial class Regex
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            cybm = null;
+            quarter = null;
         }
         else
         {
@@ -217,34 +237,39 @@ public partial class Regex
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            string monthPart = input[(hyphenPosition + 1)..(cybmPosition + 1)];
+            string monthPart = input[(hyphenPosition + 1)..(quarterPosition + 1)];
             if (!int.TryParse(monthPart, out month))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            string cybmPart = input[(cybmPosition + 2)..(input.Length - 1)];
-            if (!int.TryParse(cybmPart, out int cybmValue))
+            string quarterPart = input[(quarterPosition + 2)..(input.Length - 1)];
+            if (!int.TryParse(quarterPart, out int quarterValue))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
-            cybm = cybmValue;
+            quarter = quarterValue;
         }
+
+        return (year, month, quarter);
     }
 
+    /// <summary>
+    /// Parses the input string by using `IndexOf` on `ReadOnlySpan&lt;char&gt;`.
+    /// </summary>
     [Benchmark]
     public void IndexOfSpans()
     {
         const string input = "2008-8 [2]";
-        IndexOfSpans(input, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = IndexOfSpans(input);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    private static void IndexOfSpans(string input, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) IndexOfSpans(string input)
     {
         ReadOnlySpan<char> currentSpan = input;
 
@@ -255,22 +280,25 @@ public partial class Regex
         }
 
         ReadOnlySpan<char> yearPart = currentSpan[..hyphenPosition];
-        if (!int.TryParse(yearPart, out year))
+        if (!int.TryParse(yearPart, out int year))
         {
             throw new ArgumentException("Invalid input", nameof(input));
         }
 
         currentSpan = currentSpan[(hyphenPosition + 1)..];
 
-        int cybmPosition = currentSpan.IndexOf(" [");
-        if (cybmPosition == -1)
+        int month;
+        int? quarter;
+
+        int quarterPosition = currentSpan.IndexOf(" [");
+        if (quarterPosition == -1)
         {
             if (!int.TryParse(currentSpan, out month))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            cybm = null;
+            quarter = null;
         }
         else
         {
@@ -279,42 +307,49 @@ public partial class Regex
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            ReadOnlySpan<char> monthPart = currentSpan[0..cybmPosition];
+            ReadOnlySpan<char> monthPart = currentSpan[0..quarterPosition];
             if (!int.TryParse(monthPart, out month))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
 
-            ReadOnlySpan<char> cybmPart = currentSpan[(cybmPosition + 2)..^1];
-            if (!int.TryParse(cybmPart, out int cybmValue))
+            ReadOnlySpan<char> quarterPart = currentSpan[(quarterPosition + 2)..^1];
+            if (!int.TryParse(quarterPart, out int quarterValue))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }
-            cybm = cybmValue;
+            quarter = quarterValue;
         }
+
+        return (year, month, quarter);
     }
 #endif
 
+    /// <summary>
+    /// Parses the input string by using a non-compiled `Regex`.
+    /// </summary>
     [Benchmark]
-    public void RegexNotCompiled()
+    public (int year, int month, int? quarter) RegexNotCompiled()
     {
         const string input = "2008-8 [2]";
-        OldRegex(input, _notCompiledRegex, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = OldRegex(input, _notCompiledRegex);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
+
+        return (year, month, quarter);
     }
 #if NET7_0
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$");
+    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
 #pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
 #else
-    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$");
+    private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
 #endif
 
-    private static void OldRegex(string input, System.Text.RegularExpressions.Regex regex, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) OldRegex(string input, System.Text.RegularExpressions.Regex regex)
     {
         Match match = regex.Match(input);
         if (!match.Success)
@@ -323,71 +358,82 @@ public partial class Regex
         }
 
         string yearAsString = match.Groups["year"].Value;
-        year = int.Parse(yearAsString);
+        int year = int.Parse(yearAsString);
 
         string monthAsString = match.Groups["month"].Value;
-        month = int.Parse(monthAsString);
+        int month = int.Parse(monthAsString);
 
-        string cybmAsString = match.Groups["cybm"].Value;
-        if (int.TryParse(cybmAsString, out int cybmValue))
+        int? quarter;
+        string quarterAsString = match.Groups["quarter"].Value;
+        if (int.TryParse(quarterAsString, out int quarterValue))
         {
-            cybm = cybmValue;
+            quarter = quarterValue;
         }
         else
         {
-            cybm = null;
+            quarter = null;
         }
+
+        return (year, month, quarter);
     }
 
+    /// <summary>
+    /// Parses the input string by using a compiled `Regex`.
+    /// </summary>
     [Benchmark]
     public void RegexCompiled()
     {
         const string input = "2008-8 [2]";
-        OldRegex(input, _compiledRegex, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = OldRegex(input, _compiledRegex);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 #if NET7_0
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$", RegexOptions.Compiled);
+    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
 #pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
 #else
-    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$", RegexOptions.Compiled);
+    private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
 #endif
 
-
 #if NET7_0
+    /// <summary>
+    /// Parses the input string by using a pre-compiled `Regex`.
+    /// </summary>
     [Benchmark]
     public void RegexPrecompiled()
     {
         const string input = "2008-8 [2]";
-        OldRegex(input, GetRegex(), out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = OldRegex(input, GetRegex());
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<cybm>\d{1,2})\])?$")]
+    [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$")]
     private static partial System.Text.RegularExpressions.Regex GetRegex();
 
+    /// <summary>
+    /// Parses the input string by using a non-compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
+    /// </summary>
     [Benchmark]
     public void RegexNotCompiledSpan()
     {
         const string input = "2008-8 [2]";
-        RegexSpan(input, _notCompiledRegex, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = RegexSpan(input, _notCompiledRegex);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
-    private static void RegexSpan(string input, System.Text.RegularExpressions.Regex regex, out int year, out int month, out int? cybm)
+    private static (int year, int month, int? quarter) RegexSpan(string input, System.Text.RegularExpressions.Regex regex)
     {
         Match match = regex.Match(input);
         if (!match.Success)
@@ -396,41 +442,50 @@ public partial class Regex
         }
 
         ReadOnlySpan<char> yearAsString = match.Groups["year"].ValueSpan;
-        year = int.Parse(yearAsString);
+        int year = int.Parse(yearAsString);
 
         ReadOnlySpan<char> monthAsString = match.Groups["month"].ValueSpan;
-        month = int.Parse(monthAsString);
+        int month = int.Parse(monthAsString);
 
-        ReadOnlySpan<char> cybmAsString = match.Groups["cybm"].ValueSpan;
-        if (int.TryParse(cybmAsString, out int cybmValue))
+        int? quarter;
+        ReadOnlySpan<char> quarterAsString = match.Groups["quarter"].ValueSpan;
+        if (int.TryParse(quarterAsString, out int quarterValue))
         {
-            cybm = cybmValue;
+            quarter = quarterValue;
         }
         else
         {
-            cybm = null;
+            quarter = null;
         }
+
+        return (year, month, quarter);
     }
 
+    /// <summary>
+    /// Parses the input string by using a compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
+    /// </summary>
     [Benchmark]
     public void RegexCompiledSpan()
     {
         const string input = "2008-8 [2]";
-        RegexSpan(input, _compiledRegex, out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = RegexSpan(input, _compiledRegex);
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
     }
 
+    /// <summary>
+    /// Parses the input string by using a pre-compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
+    /// </summary>
     [Benchmark]
     public void RegexPreCompiledSpan()
     {
         const string input = "2008-8 [2]";
-        RegexSpan(input, GetRegex(), out int year, out int month, out int? cybm);
+        (int year, int month, int? quarter) = RegexSpan(input, GetRegex());
 
-        if ((year != 2008) || (month != 8) || (cybm != 2))
+        if ((year != 2008) || (month != 8) || (quarter != 2))
         {
             throw new Exception();
         }
