@@ -25,7 +25,7 @@ public void StaticMethod()
 {
     int a = 1;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = AddStatic(a, i);
     }
@@ -39,9 +39,7 @@ Addition implemented as an instance non-virtual instance method
 ```csharp
 public void InstanceMethod()
 {
-    int loops = Loops;
-
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = AddInstance(i);
     }
@@ -56,9 +54,7 @@ Addition implemented as a virtual instance method
 ```csharp
 public void VirtualMethod()
 {
-    int loops = Loops;
-
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = AddVirtual(i);
     }
@@ -77,7 +73,7 @@ public void StaticLocalFunction()
 
     int a = 1;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(a, i);
     }
@@ -91,7 +87,7 @@ public void InstanceLocalFunction()
 {
     int add(int b) => _a + b;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(i);
     }
@@ -107,7 +103,7 @@ public void InstanceLocalFunctionCapture()
     int a = 1;
     int add(int b) => a + b;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(i);
     }
@@ -123,7 +119,7 @@ public void Lambda()
 
     int a = 1;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(a, i);
     }
@@ -138,7 +134,7 @@ public void LambdaCapture()
     int a = 1;
     Func<int, int> add = b => a + b;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(i);
     }
@@ -156,7 +152,7 @@ public void DelegateStaticMethod()
 
     int a = 1;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(a, i);
     }
@@ -174,7 +170,7 @@ public void DelegateInstanceMethod()
 {
     TakesOneIntReturnsInt add = AddInstance;
 
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(i);
     }
@@ -193,9 +189,7 @@ public void DelegateVirtualMethod()
 {
     TakesOneIntReturnsInt add = AddVirtual;
 
-    int loops = Loops;
-
-    for (int i = 0; i < loops; i++)
+    for (int i = 0; i < Loops; i++)
     {
         int _ = add(i);
     }
