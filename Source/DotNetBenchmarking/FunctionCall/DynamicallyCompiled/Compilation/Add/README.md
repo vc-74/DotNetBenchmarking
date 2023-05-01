@@ -1,4 +1,4 @@
-# Dynamically compiled function compilation
+# Dynamically built function compilation
 
 ## Description
 This benchmark compares different methods of building a static/instance delegates adding two integers dynamically, equivalent to:

@@ -1,4 +1,4 @@
-# Dynamically compiled loop function compilation
+# Dynamically built loop function compilation
 
 ## Description
 This benchmark compares different methods of building a static/instance delegates implementing a loop adding two integers dynamically, equivalent to:
