@@ -6,6 +6,7 @@ This collection of benchmarks compares different methods of executing statically
 ## Benchmarks
 ### NoFunction
 Baseline implementation without using a function
+
 ```csharp
 public void NoFunction()
 {
@@ -20,6 +21,7 @@ public void NoFunction()
 
 ## StaticMethod
 Addition implemented as a static method
+
 ```csharp
 public void StaticMethod()
 {
@@ -36,6 +38,7 @@ private static int AddStatic(int a, int b) => a + b;
 
 ## InstanceMethod
 Addition implemented as an instance non-virtual instance method
+
 ```csharp
 public void InstanceMethod()
 {
@@ -51,6 +54,7 @@ private int _a = 1;
 
 ## VirtualMethod
 Addition implemented as a virtual instance method
+
 ```csharp
 public void VirtualMethod()
 {
@@ -66,6 +70,7 @@ private int _a = 1;
 
 ## StaticLocalFunction
 Addition implemented as a local static method
+
 ```csharp
 public void StaticLocalFunction()
 {
@@ -82,6 +87,7 @@ public void StaticLocalFunction()
 
 ## InstanceLocalFunction
 Addition implemented as a local non-static method
+
 ```csharp
 public void InstanceLocalFunction()
 {
@@ -97,6 +103,7 @@ private int _a = 1;
 
 ## InstanceLocalFunctionCapture
 Addition implemented as a local method capturing a local variable
+
 ```csharp
 public void InstanceLocalFunctionCapture()
 {
@@ -112,6 +119,7 @@ public void InstanceLocalFunctionCapture()
 
 ## Lambda
 Addition implemented as a local lambda expression
+
 ```csharp
 public void Lambda()
 {
@@ -128,6 +136,7 @@ public void Lambda()
 
 ## LambdaCapture
 Addition implemented as a local lambda expression capturing a local variable
+
 ```csharp
 public void LambdaCapture()
 {
@@ -143,6 +152,7 @@ public void LambdaCapture()
 
 ## DelegateStaticMethod
 Addition implemented as a static delegate
+
 ```csharp
 public delegate int TakesTwoIntsReturnsInt(int a, int b);
 
@@ -163,6 +173,7 @@ private static int AddStatic(int a, int b) => a + b;
 
 ## DelegateInstanceMethod
 Addition implemented as an instance delegate on a non-virtual instance method
+
 ```csharp
 public delegate int TakesTwoIntsReturnsInt(int a, int b);
 
@@ -182,6 +193,7 @@ private int _a = 1;
 
 ## DelegateVirtualMethod
 Addition implemented as an instance delegate on a virtual instance method
+
 ```csharp
 public delegate int TakesTwoIntsReturnsInt(int a, int b);
 

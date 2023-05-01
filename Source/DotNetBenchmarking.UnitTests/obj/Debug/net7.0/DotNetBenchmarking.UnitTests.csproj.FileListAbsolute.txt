@@ -182,3 +182,4 @@ C:\Users\vcroquet\Documents\Code\vc-74\DotNetBenchmarking\Source\DotNetBenchmark
 C:\Users\vcroquet\Documents\Code\vc-74\DotNetBenchmarking\Source\DotNetBenchmarking.UnitTests\obj\Debug\net7.0\DotNetBenchmarking.UnitTests.pdb
 C:\Users\vcroquet\Documents\Code\vc-74\DotNetBenchmarking\Source\DotNetBenchmarking.UnitTests\obj\Debug\net7.0\DotNetBenchmarking.UnitTests.genruntimeconfig.cache
 C:\Users\vcroquet\Documents\Code\vc-74\DotNetBenchmarking\Source\DotNetBenchmarking.UnitTests\obj\Debug\net7.0\ref\DotNetBenchmarking.UnitTests.dll
+C:\Users\vcroquet\Documents\Code\vc-74\DotNetBenchmarking\Source\DotNetBenchmarking.UnitTests\bin\Debug\net7.0\xunit.runner.json

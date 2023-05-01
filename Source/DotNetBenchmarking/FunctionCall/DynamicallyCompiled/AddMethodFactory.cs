@@ -18,29 +18,11 @@ public static class AddMethodFactory
     {
         switch (delegateType)
         {
-            case DelegateInstanceType.Instance:
-                {
-                    DynamicMethod addDynamicMethod = new("Add",
-                        MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,
-                        returnType: typeof(int), parameterTypes: new Type[] { typeof(object), typeof(int), typeof(int) },
-                        owner: typeof(AddLoopMethodFactory), skipVisibility: true);
-
-                    ILGenerator ILGenerator = addDynamicMethod.GetILGenerator();
-
-                    ILGenerator.Emit(OpCodes.Ldarg_1);
-                    ILGenerator.Emit(OpCodes.Ldarg_2);
-
-                    ILGenerator.Emit(OpCodes.Add);
-                    ILGenerator.Emit(OpCodes.Ret);
-
-                    return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt), _delegateTarget);
-                }
-
             case DelegateInstanceType.Static:
                 {
                     DynamicMethod addDynamicMethod = new("Add",
                         MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,
-                        returnType: typeof(int), parameterTypes: new Type[] { typeof(int), typeof(int) },
+                        returnType: typeof(int), _staticParameterTypes,
                         owner: typeof(AddLoopMethodFactory), skipVisibility: true);
 
                     ILGenerator ILGenerator = addDynamicMethod.GetILGenerator();
@@ -54,11 +36,31 @@ public static class AddMethodFactory
                     return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt));
                 }
 
+            case DelegateInstanceType.Instance:
+                {
+                    DynamicMethod addDynamicMethod = new("Add",
+                        MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,
+                        returnType: typeof(int), _instanceParameterTypes,
+                        owner: typeof(AddLoopMethodFactory), skipVisibility: true);
+
+                    ILGenerator ILGenerator = addDynamicMethod.GetILGenerator();
+
+                    ILGenerator.Emit(OpCodes.Ldarg_1);
+                    ILGenerator.Emit(OpCodes.Ldarg_2);
+
+                    ILGenerator.Emit(OpCodes.Add);
+                    ILGenerator.Emit(OpCodes.Ret);
+
+                    return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt), _delegateTarget);
+                }
+
             default:
                 throw new NotImplementedException();
         }
     }
 
+    private static readonly Type[] _staticParameterTypes = new Type[] { typeof(int), typeof(int) };
+    private static readonly Type[] _instanceParameterTypes = new Type[] { typeof(object), typeof(int), typeof(int) };
     private static readonly object _delegateTarget = new();
 
     /// <summary>
