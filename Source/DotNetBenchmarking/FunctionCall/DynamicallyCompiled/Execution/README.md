@@ -6,16 +6,6 @@ This benchmark compares different methods of executing a static/instance delegat
 ## Benchmarks
 The benchmarks are the same as the [compilation and execution benchmarks](../CompilationAndExecution) except the compilation part is not included.
 
-## Environment
-<p>
-BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)<br/>
-12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores<br/>
-.NET SDK=7.0.203<br/>
-  [Host]               : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
-  .NET 7.0             : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
-  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256<br/>
-</p>
-
 ## Results
 |                        Method |              Runtime |  Loops |         Mean |      StdDev | Ratio |   Gen0 |   Gen1 | Allocated | Alloc Ratio |
 |------------------------------ |--------------------- |------- |-------------:|------------:|------:|-------:|-------:|----------:|------------:|

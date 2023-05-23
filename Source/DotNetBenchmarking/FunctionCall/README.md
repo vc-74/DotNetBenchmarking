@@ -2,10 +2,6 @@
 This folder contains benchmarks comparing different methods of calling a function. 
 Here, function is used as a general concept which includes instance methods, static methods, delegates... in the .net world.
 
-The runtimes the benchmarks are executed on are:
-- .NET Framework 4.7.2
-- .NET 7
-
 ## The case
 These tests are based on a very simple case equivalent to:
 
@@ -17,6 +13,16 @@ for (int i = 0; i < loops; i++)
 	int sum = a + i;
 }
 ```
+
+## Environment
+<p>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)<br/>
+12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores<br/>
+.NET SDK=7.0.203<br/>
+  [Host]               : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
+  .NET 7.0             : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
+  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256<br/>
+</p>
 
 ## TL;DR
 - JIT inlining of static and non-virtual instance methods is very effective
@@ -30,8 +36,7 @@ delegate int Adder(int a, int b);
 Adder adder = (int a, int b) => Add(a, b);
 ```
 
-For dynamically compiled code, although `DynamicMethod` builds static methods, the delegate created by `DynamicMethod.CreateDelegate` can be an instance delegate:
-
+For dynamically compiled code, although `DynamicMethod` builds static methods, the delegate created by `CreateDelegate` can be an instance delegate:
 ```csharp
 private static readonly object _delegateTarget = new();
 
@@ -46,8 +51,8 @@ DynamicMethod addDynamicMethod = new("Add",
 
 return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt), _delegateTarget);
 ```
-
-- When building dynamic functions, embedding code is much faster than invoking a delegate
+- Compilation + execution of delegates sorted by performance: DynamicMethod (IL) > Expression tree 'manually' created > Dynamic type method (IL)
+- Best option for single functions: DynamicMethod and create an instance delegate from it
 
 ## Terminology
 The terminology around delegates is not always clear, especially the distinction between delegate type and delegate instance. 

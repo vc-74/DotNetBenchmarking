@@ -11,6 +11,7 @@ for (int i = 0; i < loops; i++)
 }
 ```
 
+## Benchmarks
 |                     Method |                                                                                        Description |
 |--------------------------- |--------------------------------------------------------------------------------------------------- |
 | LoopDynamicMethodStatic    | Creates a DynamicMethod, emits IL invoking a static delegate code and creates an instance delegate |
@@ -21,16 +22,6 @@ for (int i = 0; i < loops; i++)
 | LoopExpressionTreeEmbedded |             Creates an expression tree embedding the addition and and creates an instance delegate |
 
 These tests only compile delegates, they don't execute them.
-
-## Environment
-<p>
-BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)<br/>
-12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores<br/>
-.NET SDK=7.0.203<br/>
-  [Host]               : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
-  .NET 7.0             : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
-  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256<br/>
-</p>
 
 ## Results
 |                     Method |              Runtime |       Mean |     StdDev |     Median |   Gen0 |   Gen1 |   Gen2 | Allocated |

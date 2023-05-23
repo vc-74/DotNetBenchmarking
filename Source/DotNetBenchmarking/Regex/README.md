@@ -1,173 +1,131 @@
-# Function call benchmarks
-This folder contains benchmarks comparing different methods of calling a function. 
-Here, function is used as a general concept which includes instance methods, static methods, delegates... in the .net world.
+# Regex
+This folder contains benchmarks comparing different methods of parsing a string and extracting groups. The string has the following format: "Year-Month [Quarter]" where Quarter is optional.
+When used, `Regex` instances are created before the benchmark run to measure execution performance only.
 
-The runtimes the benchmarks are executed on are:
-- .NET Framework 4.7.2
-- .NET 7
+## Environment
+<p>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2846/21H2/November2021Update)<br/>
+12th Gen Intel Core i9-12900H, 1 CPU, 20 logical and 14 physical cores<br/>
+.NET SDK=7.0.203<br/>
+  [Host]               : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
+  .NET 7.0             : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2<br/>
+  .NET Framework 4.7.2 : .NET Framework 4.8 (4.8.4614.0), X64 RyuJIT VectorSize=256<br/>
+</p>
 
-## The case
-These tests are based on a very simple case equivalent to:
+## Benchmarks
 
-```csharp
-int a = 2;
+### Manual
+Parses manually character by character.
 
-for (int i = 0; i < loops; i++)
-{
-	int sum = a + i;
-}
-```
+### IndexOfString
+Parses using `string.IndexOfString`.
 
-## TL;DR
-- JIT inlining of static and non-virtual instance methods is very effective
-- When creating delegates, prefer instance delegates over static delegates if they are going to be intensively invoked ([more details](https://stackoverflow.com/a/42187448/446279))
-For statically compiled code, this can easily be achieved by calling the static method from a lambda:
-```csharp
-static int Add(int a, int b) => a + b;
+### IndexOfSpan
+Parses using `ReadOnlySpan<char>.IndexOf`.
 
-delegate int Adder(int a, int b);
-
-Adder adder = (int a, int b) => Add(a, b);
-```
-
-For dynamically compiled code, although `DynamicMethod` builds static methods, the delegate created by `DynamicMethod.CreateDelegate` can be an instance delegate:
+### RegexNotCompiledString
+Parses using `Regex` without `RegexOptions.Compiled` and extracts the groups as strings.
 
 ```csharp
-private static readonly object _delegateTarget = new();
-
-delegate int TakesTwoIntsReturnsInt(int a, int b);
-
-DynamicMethod addDynamicMethod = new("Add",
-    MethodAttributes.Static | MethodAttributes.Public, CallingConventions.Standard,
-    returnType: typeof(int), parameterTypes: new Type[] { typeof(object), typeof(int), typeof(int) },
-	owner: ..., skipVisibility: true;
-
-...
-
-return (TakesTwoIntsReturnsInt)addDynamicMethod.CreateDelegate(typeof(TakesTwoIntsReturnsInt), _delegateTarget);
+new System.Text.RegularExpressions.Regex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
 ```
 
-- When building dynamic functions, embedding code is much faster than invoking a delegate
-
-## Terminology
-The terminology around delegates is not always clear, especially the distinction between delegate type and delegate instance. 
-In this document, unless explicitly stated otherwise, delegate refers to delegate instance. Also, the following terms will be used:
-
-|                          Term |                               Definition |
-|------------------------------ |----------------------------------------- |
-|               Static delegate | Delegate instance with a null target     |
-|             Instance delegate | Delegate instance with a non-null target |
-
-## Benchmarks detail
-The different functions tested can be either:
-
-- [Statically compiled](StaticallyCompiled): compiled at 'compile time', early binding. 
-The benchmarks for such cases measure only the execution since no compilation is needed. 
-The different cases cover:
-	- Class methods: static, instance and virtual
-	- Local functions: static, instance and capturing
-	- Lambdas: non-capturing and capturing
-	- Delegates: on static, instance and virtual methods
-
-- [Dynamically compiled](DynamicallyCompiled): compiled at execution time, late binding. 
-The benchmark for such cases measure [compilation](DynamicallyCompiled/Compilation), [execution](DynamicallyCompiled/Execution) and [compilation + execution](DynamicallyCompiled/CompilationAndExecution).
-The different cases cover:
-	- DynamicMethod: static and instance delegates
-	- TyperBuilder: static and instance delegates on emitted methods
-	- Expresion tree: explicit creation and compiler generated from a lambda function
-	- DynamicMethod implementating the loop: calling a static delegate, and instance delegate or embedding the addition
-
-## Delegates performance
-Static delegates execution require some arguments reshuffling ([details](https://stackoverflow.com/a/42187448/446279)) and are slower, however, their instances can be cached during the first invocation and reused during the next invocation.
-Instance delegates do not require arguments reshuffling and are faster than static delegates, however, instances cannot be cached and have to be recreated.
-Lambdas are the best of both worlds, the compiler generates a class with a delegate field, instantiates an instance during the first invocation and caches it. 
-This instance is used as the delegate's target. Lambdas are therefore fast and don't allocate.
-
-| Delegate type | Instantiation                    | Target                                       |
-|-------------- |--------------------------------- |--------------------------------------------- |
-| Instance      | For each invocation              | Not null (instance)                          |
-| Static        | Only during the first invocation | Null                                         |
-| Lambda        | Only during the first invocation | Not null (compiler generated class instance) |
-
-### Details
-In the following example:
+### RegexCompiledString
+Parses using `Regex` with `RegexOptions.Compiled` and extracts the groups as strings.
 
 ```csharp
-public delegate int TakesTwoIntsReturnsInt(int a, int b);
-
-public void CallStatic()
-{
-    TakesTwoIntsReturnsInt add = AddStatic;
-    add(1, 2);
-}
-
-public static int AddStatic(int a, int b) => a + b;
+new System.Text.RegularExpressions.Regex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
 ```
 
-`CallStatic` compiles to:
-
-```IL
-.method public hidebysig instance void  CallStatic() cil managed
-{
-  // Code size       36 (0x24)
-  .maxstack  8
-
-  // Get the singleton instance
-  IL_0000:  ldsfld     class IL.Program/TakesTwoIntsReturnsInt IL.Program/'<>O'::'<0>__AddStatic'
-  IL_0005:  dup
-  IL_0006:  brtrue.s   IL_001b
-  // The singleton instance was null, instantiate it...
-  IL_0008:  pop
-  IL_0009:  ldnull
-  IL_000a:  ldftn      int32 IL.Program::AddStatic(int32,
-                                                   int32)
-  IL_0010:  newobj     instance void IL.Program/TakesTwoIntsReturnsInt::.ctor(object,
-                                                                              native int)
-  IL_0015:  dup
-  // and cache it
-  IL_0016:  stsfld     class IL.Program/TakesTwoIntsReturnsInt IL.Program/'<>O'::'<0>__AddStatic'
-  // The singleton instance is on the top of the stack
-  IL_001b:  ldc.i4.1
-  IL_001c:  ldc.i4.2
-  IL_001d:  callvirt   instance int32 IL.Program/TakesTwoIntsReturnsInt::Invoke(int32,
-                                                                                int32)
-  IL_0022:  pop
-  IL_0023:  ret
-}
-```
-
-whereas
+### RegexPrecompiledString
+Parses using a pre-compiled `Regex` using `GeneractedRegex` and extracts the groups as strings.
 
 ```csharp
-public delegate int TakesTwoIntsReturnsInt(int a, int b);
-
-public void CallInstance()
-{
-    TakesTwoIntsReturnsInt add = AddInstance;
-    add(1, 2);
-}
-
-public int AddInstance(int a, int b) => a + b;
+[GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$")]
+private static partial System.Text.RegularExpressions.Regex GetRegex();
 ```
 
-compiles to:
+### RegexNotCompiledSpan
+Parses using `Regex` without `RegexOptions.Compiled` and extracts the groups as `ReadOnlySpan&lt;char&gt;`.
 
-```IL
-.method public hidebysig instance void  CallInstance() cil managed
-{
-  // Code size       21 (0x15)
-  .maxstack  8
-  // Always instantiate the delegate instance
-  IL_0000:  ldarg.0
-  IL_0001:  ldftn      instance int32 IL.Program::AddInstance(int32,
-                                                              int32)
-  IL_0007:  newobj     instance void IL.Program/TakesTwoIntsReturnsInt::.ctor(object,
-                                                                              native int)
-  IL_000c:  ldc.i4.1
-  IL_000d:  ldc.i4.2
-  IL_000e:  callvirt   instance int32 IL.Program/TakesTwoIntsReturnsInt::Invoke(int32,
-                                                                                int32)
-  IL_0013:  pop
-  IL_0014:  ret
-} // end of method Program::CallInstance
+```csharp
+new System.Text.RegularExpressions.Regex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
 ```
+
+### RegexCompiledSpan
+Parses using `Regex` with `RegexOptions.Compiled` and extracts the groups as `ReadOnlySpan&lt;char&gt;`.
+
+```csharp
+new System.Text.RegularExpressions.Regex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
+```
+
+### RegexPrecompiledSpan
+Parses using a pre-compiled `Regex` using `GeneractedRegex` and extracts the groups as `ReadOnlySpan&lt;char&gt;`.
+
+```csharp
+[GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$")]
+private static partial System.Text.RegularExpressions.Regex GetRegex();
+```
+
+## Results
+### Features available on .NET Framework 4.7.2 and .NET 7.0
+|                 Method |                  Job |              Runtime | Loops |         Mean |       Error |      StdDev | Ratio | RatioSD |     Gen0 | Allocated | Alloc Ratio |
+|----------------------- |--------------------- |--------------------- |------ |-------------:|------------:|------------:|------:|--------:|---------:|----------:|------------:|
+|                 Manual |             .NET 7.0 |             .NET 7.0 |    10 |     156.6 ns |     1.27 ns |     1.19 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString |             .NET 7.0 |             .NET 7.0 |    10 |     790.1 ns |     2.29 ns |     2.14 ns |  5.05 |    0.04 |   0.0629 |     800 B |          NA |
+| RegexNotCompiledString |             .NET 7.0 |             .NET 7.0 |    10 |   3,874.7 ns |    25.96 ns |    23.01 ns | 24.73 |    0.26 |   0.6485 |    8160 B |          NA |
+|    RegexCompiledString |             .NET 7.0 |             .NET 7.0 |    10 |   2,768.2 ns |    20.81 ns |    17.38 ns | 17.68 |    0.23 |   0.6485 |    8160 B |          NA |
+|                        |                      |                      |       |              |             |             |       |         |          |           |             |
+|                 Manual | .NET Framework 4.7.2 | .NET Framework 4.7.2 |    10 |     171.5 ns |     0.63 ns |     0.49 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |    10 |   3,150.0 ns |     4.90 ns |     4.35 ns | 18.37 |    0.06 |   0.1640 |    1043 B |          NA |
+| RegexNotCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |    10 |   6,921.5 ns |    71.63 ns |    67.01 ns | 40.46 |    0.42 |   1.3351 |    8425 B |          NA |
+|    RegexCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |    10 |   5,700.1 ns |    10.40 ns |     9.73 ns | 33.23 |    0.11 |   1.3351 |    8425 B |          NA |
+|                        |                      |                      |       |              |             |             |       |         |          |           |             |
+|                 Manual |             .NET 7.0 |             .NET 7.0 |   100 |   1,669.5 ns |     6.60 ns |     6.18 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString |             .NET 7.0 |             .NET 7.0 |   100 |   7,712.0 ns |    54.63 ns |    48.43 ns |  4.62 |    0.04 |   0.6256 |    8000 B |          NA |
+| RegexNotCompiledString |             .NET 7.0 |             .NET 7.0 |   100 |  40,190.4 ns |   121.86 ns |   101.76 ns | 24.07 |    0.12 |   6.4697 |   81600 B |          NA |
+|    RegexCompiledString |             .NET 7.0 |             .NET 7.0 |   100 |  27,547.1 ns |   530.05 ns |   725.53 ns | 16.36 |    0.43 |   6.5002 |   81600 B |          NA |
+|                        |                      |                      |       |              |             |             |       |         |          |           |             |
+|                 Manual | .NET Framework 4.7.2 | .NET Framework 4.7.2 |   100 |   1,615.4 ns |    11.26 ns |    10.53 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |   100 |  31,517.8 ns |    93.72 ns |    83.08 ns | 19.52 |    0.14 |   1.6479 |   10431 B |          NA |
+| RegexNotCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |   100 |  68,581.2 ns |   185.67 ns |   155.04 ns | 42.45 |    0.31 |  13.3057 |   84248 B |          NA |
+|    RegexCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |   100 |  57,013.2 ns |   121.12 ns |   107.37 ns | 35.30 |    0.24 |  13.3667 |   84248 B |          NA |
+|                        |                      |                      |       |              |             |             |       |         |          |           |             |
+|                 Manual |             .NET 7.0 |             .NET 7.0 |  1000 |  17,283.3 ns |    19.43 ns |    17.22 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString |             .NET 7.0 |             .NET 7.0 |  1000 |  78,599.3 ns |   632.02 ns |   560.27 ns |  4.55 |    0.03 |   6.3477 |   80000 B |          NA |
+| RegexNotCompiledString |             .NET 7.0 |             .NET 7.0 |  1000 | 378,812.3 ns | 2,088.11 ns | 1,851.06 ns | 21.92 |    0.11 |  64.9414 |  816000 B |          NA |
+|    RegexCompiledString |             .NET 7.0 |             .NET 7.0 |  1000 | 277,962.2 ns | 1,908.95 ns | 1,785.64 ns | 16.09 |    0.11 |  64.9414 |  816000 B |          NA |
+|                        |                      |                      |       |              |             |             |       |         |          |           |             |
+|                 Manual | .NET Framework 4.7.2 | .NET Framework 4.7.2 |  1000 |  15,920.5 ns |   112.27 ns |   105.02 ns |  1.00 |    0.00 |        - |         - |          NA |
+|          IndexOfString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |  1000 | 313,549.0 ns |   716.36 ns |   598.19 ns | 19.68 |    0.11 |  16.1133 |  104309 B |          NA |
+| RegexNotCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |  1000 | 680,513.7 ns | 1,219.80 ns | 1,081.32 ns | 42.70 |    0.21 | 133.7891 |  842474 B |          NA |
+|    RegexCompiledString | .NET Framework 4.7.2 | .NET Framework 4.7.2 |  1000 | 567,279.9 ns |   858.94 ns |   761.42 ns | 35.60 |    0.18 | 133.7891 |  842482 B |          NA |
+
+### .NET 7.0 features
+|                 Method | Loops |         Mean |        Error |       StdDev |       Median | Ratio | RatioSD |    Gen0 | Allocated | Alloc Ratio |
+|----------------------- |------ |-------------:|-------------:|-------------:|-------------:|------:|--------:|--------:|----------:|------------:|
+|                 Manual |    10 |     156.8 ns |      2.65 ns |      2.35 ns |     156.5 ns |  1.00 |    0.00 |       - |         - |          NA |
+|            IndexOfSpan |    10 |     340.9 ns |      0.68 ns |      0.57 ns |     340.7 ns |  2.17 |    0.03 |       - |         - |          NA |
+| RegexPrecompiledString |    10 |   2,543.8 ns |     13.08 ns |     10.92 ns |   2,542.6 ns | 16.23 |    0.27 |  0.6485 |    8160 B |          NA |
+|   RegexNotCompiledSpan |    10 |   3,639.6 ns |     63.66 ns |     59.55 ns |   3,638.1 ns | 23.22 |    0.56 |  0.5836 |    7360 B |          NA |
+|      RegexCompiledSpan |    10 |   2,653.5 ns |     52.58 ns |     68.37 ns |   2,663.3 ns | 16.92 |    0.48 |  0.5836 |    7360 B |          NA |
+|   RegexPreCompiledSpan |    10 |   2,363.7 ns |     19.13 ns |     17.89 ns |   2,361.3 ns | 15.07 |    0.25 |  0.5836 |    7360 B |          NA |
+|                        |       |              |              |              |              |       |         |         |           |             |
+|                 Manual |   100 |   1,676.1 ns |     24.85 ns |     22.03 ns |   1,666.7 ns |  1.00 |    0.00 |       - |         - |          NA |
+|            IndexOfSpan |   100 |   3,316.6 ns |     23.98 ns |     21.25 ns |   3,319.9 ns |  1.98 |    0.03 |       - |         - |          NA |
+| RegexPrecompiledString |   100 |  24,954.0 ns |    175.82 ns |    146.82 ns |  24,959.2 ns | 14.88 |    0.17 |  6.5002 |   81600 B |          NA |
+|   RegexNotCompiledSpan |   100 |  35,837.0 ns |    227.91 ns |    202.03 ns |  35,867.6 ns | 21.38 |    0.28 |  5.8594 |   73600 B |          NA |
+|      RegexCompiledSpan |   100 |  25,760.3 ns |    177.14 ns |    165.70 ns |  25,771.6 ns | 15.37 |    0.25 |  5.8594 |   73600 B |          NA |
+|   RegexPreCompiledSpan |   100 |  24,848.3 ns |    176.03 ns |    164.66 ns |  24,884.4 ns | 14.82 |    0.21 |  5.8594 |   73600 B |          NA |
+|                        |       |              |              |              |              |       |         |         |           |             |
+|                 Manual |  1000 |  16,708.6 ns |    130.54 ns |    115.72 ns |  16,747.3 ns |  1.00 |    0.00 |       - |         - |          NA |
+|            IndexOfSpan |  1000 |  32,165.0 ns |    208.40 ns |    174.02 ns |  32,092.7 ns |  1.93 |    0.01 |       - |         - |          NA |
+| RegexPrecompiledString |  1000 | 246,871.8 ns |  1,241.57 ns |  1,100.62 ns | 246,582.3 ns | 14.78 |    0.13 | 64.9414 |  816000 B |          NA |
+|   RegexNotCompiledSpan |  1000 | 360,668.8 ns |  3,097.96 ns |  2,746.26 ns | 360,440.6 ns | 21.59 |    0.18 | 58.5938 |  736000 B |          NA |
+|      RegexCompiledSpan |  1000 | 359,436.7 ns | 15,460.42 ns | 44,606.84 ns | 377,092.5 ns | 19.93 |    3.30 | 58.5938 |  736000 B |          NA |
+|   RegexPreCompiledSpan |  1000 | 252,484.6 ns |  1,507.05 ns |  1,335.96 ns | 252,113.3 ns | 15.11 |    0.12 | 58.5938 |  736000 B |          NA |
+
+## Conclusions
+- .NET 7.0 significantly faster than .NET Framework 4.7.2, even for cases not using `Regex`
+- Compilation improves performance more on .NET 7.0 (~-40%) than .NET Framework 4.7.2 (~-20%)
+- Regex on spans surprisingly slower than on strings in the 1K test but allocating less

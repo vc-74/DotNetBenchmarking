@@ -5,29 +5,29 @@ using BenchmarkDotNet.Jobs;
 namespace DotNetBenchmarking.Regex;
 
 /// <summary>
-/// Compares different methods of building and executing a regular expression.
+/// Compares different methods of building and executing a regular expression available on .net472 and .net7.
 /// </summary>
 [SimpleJob(RuntimeMoniker.Net472)]
 [SimpleJob(RuntimeMoniker.Net70)]
 [MemoryDiagnoser]
 public partial class Regex
 {
+    [Params(10, 100, 1_000)]
+    public int Loops { get; set; }
+
     /// <summary>
     /// Parses the input string by scanning character by character.
     /// </summary>
     [Benchmark(Baseline = true)]
     public void Manual()
     {
-        const string input = "2008-8 [3]";
-        (int year, int month, int? quarter) = Manual(input);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
+        for (int i = 0; i < Loops; i++)
         {
-            throw new Exception();
+            Manual("2002-8 [3]");
         }
     }
 
-    private static (int year, int month, int? quarter) Manual(string input)
+    internal static (int year, int month, int? quarter) Manual(string input)
     {
         bool inYear = true, inMonth = false, inQuarter = false;
         int year = 0, month = 0;
@@ -125,16 +125,13 @@ public partial class Regex
     [Benchmark]
     public void IndexOfString()
     {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = IndexOfString(input);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
+        for (int i = 0; i < Loops; i++)
         {
-            throw new Exception();
+            IndexOfString("2002-8 [2]");
         }
     }
 
-    private static (int year, int month, int? quarter) IndexOfString(string input)
+    internal static (int year, int month, int? quarter) IndexOfString(string input)
     {
         int hyphenPosition = input.IndexOf('-');
         if (hyphenPosition == -1)
@@ -186,161 +183,20 @@ public partial class Regex
         return (year, month, quarter);
     }
 
-#if NET7_0
-    /// <summary>
-    /// Parses the input string by using `IndexOf` on ranges.
-    /// </summary>
-    [Benchmark]
-    public void IndexOfRanges()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = IndexOfRanges(input);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
-
-    private static (int year, int month, int? quarter) IndexOfRanges(string input)
-    {
-        int hyphenPosition = input.IndexOf('-');
-        if (hyphenPosition == -1)
-        {
-            throw new ArgumentException("Invalid input", nameof(input));
-        }
-
-        string yearPart = input[..hyphenPosition];
-        if (!int.TryParse(yearPart, out int year))
-        {
-            throw new ArgumentException("Invalid input", nameof(input));
-        }
-
-        int month;
-        int? quarter;
-
-        int quarterPosition = input.IndexOf(" [", hyphenPosition);
-        if (quarterPosition == -1)
-        {
-            string monthPart = input[(hyphenPosition + 2)..];
-            if (!int.TryParse(monthPart, out month))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            quarter = null;
-        }
-        else
-        {
-            if (!input.EndsWith("]"))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            string monthPart = input[(hyphenPosition + 1)..(quarterPosition + 1)];
-            if (!int.TryParse(monthPart, out month))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            string quarterPart = input[(quarterPosition + 2)..(input.Length - 1)];
-            if (!int.TryParse(quarterPart, out int quarterValue))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-            quarter = quarterValue;
-        }
-
-        return (year, month, quarter);
-    }
-
-    /// <summary>
-    /// Parses the input string by using `IndexOf` on `ReadOnlySpan&lt;char&gt;`.
-    /// </summary>
-    [Benchmark]
-    public void IndexOfSpans()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = IndexOfSpans(input);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
-
-    private static (int year, int month, int? quarter) IndexOfSpans(string input)
-    {
-        ReadOnlySpan<char> currentSpan = input;
-
-        int hyphenPosition = currentSpan.IndexOf('-');
-        if (hyphenPosition == -1)
-        {
-            throw new ArgumentException("Invalid input", nameof(input));
-        }
-
-        ReadOnlySpan<char> yearPart = currentSpan[..hyphenPosition];
-        if (!int.TryParse(yearPart, out int year))
-        {
-            throw new ArgumentException("Invalid input", nameof(input));
-        }
-
-        currentSpan = currentSpan[(hyphenPosition + 1)..];
-
-        int month;
-        int? quarter;
-
-        int quarterPosition = currentSpan.IndexOf(" [");
-        if (quarterPosition == -1)
-        {
-            if (!int.TryParse(currentSpan, out month))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            quarter = null;
-        }
-        else
-        {
-            if (!currentSpan.EndsWith("]"))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            ReadOnlySpan<char> monthPart = currentSpan[0..quarterPosition];
-            if (!int.TryParse(monthPart, out month))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-
-            ReadOnlySpan<char> quarterPart = currentSpan[(quarterPosition + 2)..^1];
-            if (!int.TryParse(quarterPart, out int quarterValue))
-            {
-                throw new ArgumentException("Invalid input", nameof(input));
-            }
-            quarter = quarterValue;
-        }
-
-        return (year, month, quarter);
-    }
-#endif
-
     /// <summary>
     /// Parses the input string by using a non-compiled `Regex`.
     /// </summary>
     [Benchmark]
-    public (int year, int month, int? quarter) RegexNotCompiled()
+    public void RegexNotCompiledString()
     {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = OldRegex(input, _notCompiledRegex);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
+        for (int i = 0; i < Loops; i++)
         {
-            throw new Exception();
+            RegexNotCompiledString("2002-8 [2]");
         }
-
-        return (year, month, quarter);
     }
+
+    internal static (int year, int month, int? quarter) RegexNotCompiledString(string input) => RegexString(input, _notCompiledRegex);
+
 #if NET7_0
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
     private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
@@ -349,7 +205,7 @@ public partial class Regex
     private static readonly System.Text.RegularExpressions.Regex _notCompiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$");
 #endif
 
-    private static (int year, int month, int? quarter) OldRegex(string input, System.Text.RegularExpressions.Regex regex)
+    private static (int year, int month, int? quarter) RegexString(string input, System.Text.RegularExpressions.Regex regex)
     {
         Match match = regex.Match(input);
         if (!match.Success)
@@ -378,117 +234,24 @@ public partial class Regex
     }
 
     /// <summary>
-    /// Parses the input string by using a compiled `Regex`.
+    /// Parses the input string by using a compiled `Regex` and extracts the groups as strings.
     /// </summary>
     [Benchmark]
-    public void RegexCompiled()
+    public void RegexCompiledString()
     {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = OldRegex(input, _compiledRegex);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
+        for (int i = 0; i < Loops; i++)
         {
-            throw new Exception();
+            RegexCompiledString("2002-8 [2]");
         }
     }
+
+    internal static (int year, int month, int? quarter) RegexCompiledString(string input) => RegexString(input, _compiledRegex);
+
 #if NET7_0
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
     private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
 #pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
 #else
     private static readonly System.Text.RegularExpressions.Regex _compiledRegex = new(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$", RegexOptions.Compiled);
-#endif
-
-#if NET7_0
-    /// <summary>
-    /// Parses the input string by using a pre-compiled `Regex`.
-    /// </summary>
-    [Benchmark]
-    public void RegexPrecompiled()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = OldRegex(input, GetRegex());
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
-
-    [GeneratedRegex(@"^(?<year>\d{4})\-(?<month>\d{1,2})( \[(?<quarter>\d{1,2})\])?$")]
-    private static partial System.Text.RegularExpressions.Regex GetRegex();
-
-    /// <summary>
-    /// Parses the input string by using a non-compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
-    /// </summary>
-    [Benchmark]
-    public void RegexNotCompiledSpan()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = RegexSpan(input, _notCompiledRegex);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
-
-    private static (int year, int month, int? quarter) RegexSpan(string input, System.Text.RegularExpressions.Regex regex)
-    {
-        Match match = regex.Match(input);
-        if (!match.Success)
-        {
-            throw new ArgumentException("Invalid input", nameof(input));
-        }
-
-        ReadOnlySpan<char> yearAsString = match.Groups["year"].ValueSpan;
-        int year = int.Parse(yearAsString);
-
-        ReadOnlySpan<char> monthAsString = match.Groups["month"].ValueSpan;
-        int month = int.Parse(monthAsString);
-
-        int? quarter;
-        ReadOnlySpan<char> quarterAsString = match.Groups["quarter"].ValueSpan;
-        if (int.TryParse(quarterAsString, out int quarterValue))
-        {
-            quarter = quarterValue;
-        }
-        else
-        {
-            quarter = null;
-        }
-
-        return (year, month, quarter);
-    }
-
-    /// <summary>
-    /// Parses the input string by using a compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
-    /// </summary>
-    [Benchmark]
-    public void RegexCompiledSpan()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = RegexSpan(input, _compiledRegex);
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
-
-    /// <summary>
-    /// Parses the input string by using a pre-compiled `Regex` on `ReadOnlySpan&lt;char&gt;`.
-    /// </summary>
-    [Benchmark]
-    public void RegexPreCompiledSpan()
-    {
-        const string input = "2008-8 [2]";
-        (int year, int month, int? quarter) = RegexSpan(input, GetRegex());
-
-        if ((year != 2008) || (month != 8) || (quarter != 2))
-        {
-            throw new Exception();
-        }
-    }
 #endif
 }

@@ -226,21 +226,16 @@ internal static class AddLoopMethodFactory
     /// <param name="addImplementation">Add method implementation.</param>
     /// <returns>A delegate to the built method.</returns>
     public static TakesAnInt GetFromExpressionTree(AddImplementation addImplementation) =>
-        addImplementation switch
-        {
-            AddImplementation.StaticDelegate => GetFromExpressionTreeStatic(),
-            AddImplementation.InstanceDelegate => GetFromExpressionTreeInstance(),
-            AddImplementation.Embedded => GetFromExpressionTreeEmbedded(),
-
-            _ => throw new NotImplementedException()
-        };
+        (addImplementation != AddImplementation.Embedded) ? GetFromExpressionTreeNonEmbedded(addImplementation)
+                                                          : GetFromExpressionTreeEmbedded();
 
     /// <summary>
     /// Builds a delegate executing a certain number of addition loops using an expression tree.
     /// The addition is be implemented as a static delegate call from the loop.
     /// </summary>
+    /// <param name="addImplementation">Add method implementation.</param>
     /// <returns>A delegate to the built method.</returns>
-    private static TakesAnInt GetFromExpressionTreeStatic()
+    private static TakesAnInt GetFromExpressionTreeNonEmbedded(AddImplementation addImplementation)
     {
         ParameterExpression loops = Expression.Parameter(typeof(int), "loops");
 
@@ -253,50 +248,17 @@ internal static class AddLoopMethodFactory
 
         LabelTarget breakLabel = Expression.Label("break");
 
-        BlockExpression body = Expression.Block(new ParameterExpression[] { adder, a, i },
-            Expression.Assign(adder, Expression.Call(_AddMethodFactoryGetFromDynamicMethodMethod, Expression.Constant(DelegateInstanceType.Instance))),
-            Expression.Assign(i, Expression.Constant(0)),
-            Expression.Assign(a, Expression.Constant(1)),
-            Expression.Loop
-            (
-                Expression.Block(new ParameterExpression[] { sum },
-                    Expression.IfThen
-                    (
-                        Expression.GreaterThanOrEqual(i, loops),
-                        Expression.Break(breakLabel)
-                    ),
+        // Get the delegate and store it in a local variable
+        DelegateInstanceType delegateInstanceType = addImplementation switch
+        {
+            AddImplementation.StaticDelegate => DelegateInstanceType.Static,
+            AddImplementation.InstanceDelegate => DelegateInstanceType.Instance,
 
-                    Expression.Assign(sum, Expression.Invoke(adder, a, i)),
-                    Expression.PostIncrementAssign(i)
-                ),
-                breakLabel
-            ),
-            Expression.Constant(null));
-
-        LambdaExpression lambdaExpression = Expression.Lambda(typeof(TakesAnInt), body, loops);
-        return (TakesAnInt)lambdaExpression.Compile();
-    }
-
-    /// <summary>
-    /// Builds a delegate executing a certain number of addition loops using an expression tree.
-    /// The addition is be implemented as an instance delegate call from the loop.
-    /// </summary>
-    /// <returns>A delegate to the built method.</returns>
-    private static TakesAnInt GetFromExpressionTreeInstance()
-    {
-        ParameterExpression loops = Expression.Parameter(typeof(int), "loops");
-
-        ParameterExpression a = Expression.Variable(typeof(int), "a");
-        ParameterExpression i = Expression.Variable(typeof(int), "i");
-
-        ParameterExpression sum = Expression.Variable(typeof(int), "sum");
-
-        ParameterExpression adder = Expression.Variable(typeof(TakesTwoIntsReturnsInt), "adder");
-
-        LabelTarget breakLabel = Expression.Label("break");
+            _ => throw new NotImplementedException()
+        };
 
         BlockExpression body = Expression.Block(new ParameterExpression[] { adder, a, i },
-            Expression.Assign(adder, Expression.Call(_AddMethodFactoryGetFromDynamicMethodMethod, Expression.Constant(DelegateInstanceType.Instance))),
+            Expression.Assign(adder, Expression.Call(_AddMethodFactoryGetFromDynamicMethodMethod, Expression.Constant(addImplementation))),
             Expression.Assign(i, Expression.Constant(0)),
             Expression.Assign(a, Expression.Constant(1)),
             Expression.Loop
@@ -323,7 +285,6 @@ internal static class AddLoopMethodFactory
     /// Builds a delegate executing a certain number of addition loops using an expression tree.
     /// The addition is be embedded in the loop.
     /// </summary>
-    /// <param name="addImplementation">Add method implementation.</param>
     /// <returns>A delegate to the built method.</returns>
     private static TakesAnInt GetFromExpressionTreeEmbedded()
     {

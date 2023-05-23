@@ -18,6 +18,7 @@ public class CountSetBitsForEach
     [GlobalSetup]
     public void GlobalSetup()
     {
+        // Use an indicates enumerable to avoid compiler/JIT bound checks optimization
         _indices = Enumerable.Range(0, Count);
     }
     private IEnumerable<int> _indices = null!;

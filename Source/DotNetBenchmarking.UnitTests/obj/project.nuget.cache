@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "O2F0vzwQiBABetY9uZEeMNQQZ/7/+jzJqZJ4yTR1QKfe0fKXaZo2sVLRH26nR12vzxfri3vrfF8o6zIkXdG10w==",
+  "dgSpecHash": "mtBL3W6EQt1opJOm/Vaige1UKwOXNWCH0lduMdW5+KDJE1cQ+IAmPszkq5150ilaqKgtv5K26jT7bt8RW83z6g==",
   "success": true,
   "projectFilePath": "C:\\Users\\vcroquet\\Documents\\Code\\vc-74\\DotNetBenchmarking\\Source\\DotNetBenchmarking.UnitTests\\DotNetBenchmarking.UnitTests.csproj",
   "expectedPackageFiles": [

@@ -6,7 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 #if NET7_0
-[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.ExpressionException")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.CallerArgumentExpression")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.MultipleOutputParameters")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.HashCode.HashCode")]
 #endif
@@ -14,6 +14,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.Regex.Regex")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.PropertyVsField")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.StaticallyCompiled.Execution")]
-[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.Compilation")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.Add.Compilation")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.Loop.Compilation")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.Execution")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.FunctionCall.DynamicallyCompiled.CompilationAndExecution")]
