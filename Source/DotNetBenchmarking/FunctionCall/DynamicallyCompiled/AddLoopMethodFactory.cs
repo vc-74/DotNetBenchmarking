@@ -248,15 +248,6 @@ internal static class AddLoopMethodFactory
 
         LabelTarget breakLabel = Expression.Label("break");
 
-        // Get the delegate and store it in a local variable
-        DelegateInstanceType delegateInstanceType = addImplementation switch
-        {
-            AddImplementation.StaticDelegate => DelegateInstanceType.Static,
-            AddImplementation.InstanceDelegate => DelegateInstanceType.Instance,
-
-            _ => throw new NotImplementedException()
-        };
-
         BlockExpression body = Expression.Block(new ParameterExpression[] { adder, a, i },
             Expression.Assign(adder, Expression.Call(_AddMethodFactoryGetFromDynamicMethodMethod, Expression.Constant(addImplementation))),
             Expression.Assign(i, Expression.Constant(0)),

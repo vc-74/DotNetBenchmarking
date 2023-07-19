@@ -10,7 +10,7 @@ namespace DotNetBenchmarking.BitCollection;
 public class ReadWriteBits
 {
     [Params(1_000)]
-    public int Count;
+    public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
     public void BooleanArray()

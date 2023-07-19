@@ -9,7 +9,7 @@ namespace DotNetBenchmarking.Collections;
 public partial class ArrayClearVsRecreate
 {
     [Params(100)]
-    public int Count;
+    public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
     public void Recreate()

@@ -9,7 +9,7 @@ namespace DotNetBenchmarking.Linq;
 public class RangeWhereSelectTests
 {
     [Params(100, 1_000, 10_000)]
-    public int Count;
+    public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
     public void Manual()

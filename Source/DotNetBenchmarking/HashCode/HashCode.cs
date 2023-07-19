@@ -13,7 +13,7 @@ public class HashCode
     /// Number of elements in a bit collection.
     /// </summary>
     [Params(10_000, 100_000)]
-    public int Count;
+    public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
     public void HashCodeTest()

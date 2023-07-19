@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.CallerArgumentExpression")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.MultipleOutputParameters")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.HashCode.HashCode")]
+[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.Regex.DateTimeParseExactVsRegex")]
 #endif
 
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Benchmark methods must not be static", Scope = "type", Target = "~T:DotNetBenchmarking.Regex.Regex")]

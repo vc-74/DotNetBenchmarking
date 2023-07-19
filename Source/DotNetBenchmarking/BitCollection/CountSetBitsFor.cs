@@ -13,7 +13,7 @@ public class CountSetBitsFor
     /// Number of elements in a bit collection.
     /// </summary>
     [Params(100, 1_000, 10_000)]
-    public int Count;
+    public int Count { get; set; }
 
     /// <summary>
     /// Create and initialize an array of <see cref="bool"/>

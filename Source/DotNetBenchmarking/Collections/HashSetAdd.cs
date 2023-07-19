@@ -6,7 +6,7 @@ namespace DotNetBenchmarking.Collections;
 public class HashSetAdd
 {
     [Params(10, 1_000, 10_000, 100_000)]
-    public int Count;
+    public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
     public void UnionDoubleEnumeration()

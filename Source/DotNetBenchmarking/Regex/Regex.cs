@@ -148,7 +148,7 @@ public partial class Regex
         int month;
         int? quarter;
 
-        int quarterPosition = input.IndexOf(" [", hyphenPosition);
+        int quarterPosition = input.IndexOf(" [", hyphenPosition, StringComparison.Ordinal);
         if (quarterPosition == -1)
         {
             string monthPart = input[(hyphenPosition + 1)..];
@@ -161,7 +161,7 @@ public partial class Regex
         }
         else
         {
-            if (!input.EndsWith("]"))
+            if (!input.EndsWith("]", StringComparison.Ordinal))
             {
                 throw new ArgumentException("Invalid input", nameof(input));
             }

@@ -9,7 +9,7 @@ MemoryDiagnoser]
 public partial class IReadOnlyListEnumeration
 {
     [Params(100, 1_000)]
-    public int Count;
+    public int Count { get; set; }
 
     [GlobalSetup]
     public void GlobalSetup()
