@@ -9,7 +9,7 @@ namespace DotNetBenchmarking.BitCollection;
 [MemoryDiagnoser]
 public class ReadWriteBits
 {
-    [Params(1_000)]
+    [Params(100, 1_000, 10_000)]
     public int Count { get; set; }
 
     [Benchmark(Baseline = true)]
@@ -23,16 +23,18 @@ public class ReadWriteBits
     {
         for (int i = 0; i < span.Length; i++)
         {
-            span[i] = ((i % 2) == 0);
+            span[i] = IsEven(i);
         }
 
         bool result = false;
 
-        for (int i = 0; i < (span.Length / 2); i++)
+        for (int i = 0; i < span.Length; i++)
         {
             result &= span[i];
         }
     }
+
+    private static bool IsEven(int i) => ((i % 2) == 0);
 
     [Benchmark]
     public void BooleanArrayStackalloc()
@@ -48,13 +50,13 @@ public class ReadWriteBits
 
         for (int i = 0; i < Count; i++)
         {
-            bool bit = ((i % 2) == 0);
+            bool bit = IsEven(i);
             list.Add(bit);
         }
 
         bool result = false;
 
-        for (int i = 0; i < (Count / 2); i++)
+        for (int i = 0; i < Count; i++)
         {
             result &= list[i];
         }
@@ -67,25 +69,12 @@ public class ReadWriteBits
 
         for (int i = 0; i < Count; i++)
         {
-            bitArray[i] = ((i % 2) == 0);
+            bitArray[i] = IsEven(i);
         }
 
         bool result = false;
 
-        for (int i = 0; i < (Count / 2); i++)
-        {
-            result &= bitArray[i];
-        }
-    }
-
-    [Benchmark]
-    public void BitArrayInitializer()
-    {
-        BitArray bitArray = new(Enumerable.Range(0, Count).Select(i => ((i % 2) == 0)).ToArray());
-
-        bool result = false;
-
-        for (int i = 0; i < (Count / 2); i++)
+        for (int i = 0; i < Count; i++)
         {
             result &= bitArray[i];
         }

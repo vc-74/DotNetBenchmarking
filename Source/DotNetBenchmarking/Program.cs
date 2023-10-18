@@ -6,6 +6,8 @@ internal class Program
 {
     static void Main(string[] _)
     {
-        BenchmarkRunner.Run(typeof(Collections.Enumerators));
+        BenchmarkRunner.Run(typeof(BitCollection.ReadWriteBits));
+        /*BenchmarkRunner.Run(typeof(BitCollection.CountSetBits));
+        BenchmarkRunner.Run(typeof(BitCollection.ReadWriteBits));*/
     }
 }
